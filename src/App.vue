@@ -1,38 +1,44 @@
 <template>
-  <v-app>
-    <v-toolbar app>
-      <v-toolbar-title class="headline text-uppercase">
-        <span>Vuetify</span>
-        <span class="font-weight-light">MATERIAL DESIGN</span>
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn
-        flat
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-      >
-        <span class="mr-2">Latest Release</span>
-      </v-btn>
+  <v-app dark>
+    <v-navigation-drawer clipped app class="elevation-12" right permanent>
+      <tool-box></tool-box>
+    </v-navigation-drawer>
+
+    <v-toolbar app fixed clipped-left>
+      <!-- <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon> -->
+      <v-toolbar-title>Raman Spectrometer</v-toolbar-title>
     </v-toolbar>
 
     <v-content>
-      <HelloWorld/>
+        <router-view></router-view>
     </v-content>
+
+    <v-footer app fixed>
+      <v-spacer></v-spacer>
+      <span>&copy; 2019</span>
+    </v-footer>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
+import ToolBox from '@/components/ToolBox.vue';
 
 export default {
-  name: 'App',
   components: {
-    HelloWorld
+    ToolBox,
   },
-  data () {
-    return {
-      //
-    }
+  data: () => ({
+    drawer: null
+  }),
+  props: {
+    source: String
   }
-}
+};
 </script>
+
+<style>
+html {
+  overflow-y: auto;
+}
+</style>
+
