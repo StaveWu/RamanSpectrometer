@@ -11,6 +11,7 @@
 
     <v-content>
         <router-view></router-view>
+        <v-btn id="test" bottom left>test</v-btn>
     </v-content>
 
     <v-footer app fixed>
@@ -39,6 +40,11 @@ export default {
 <style>
 html {
   overflow-y: auto;
+}
+#test {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
 }
 </style>
 
