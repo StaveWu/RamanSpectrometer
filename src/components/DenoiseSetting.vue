@@ -1,11 +1,14 @@
 <template>
   <v-container>
     <v-layout wrap>
-      <v-flex md12>
+      <v-flex md12 xs12>
         <v-combobox v-model="selected" :items="items" chips label="请选择去噪算法"></v-combobox>
       </v-flex>
-      <v-flex md12>
+      <v-flex md12 xs12>
         <sg-filter v-if="isSG()"></sg-filter>
+      </v-flex>
+      <v-flex md12 xs12>
+        <v-btn @click="denoise()">去噪</v-btn>
       </v-flex>
     </v-layout>
   </v-container>
@@ -27,6 +30,10 @@ export default Vue.extend({
   methods: {
     isSG() {
       return this.selected === 'S-G滤波';
+    },
+    denoise() {
+      // denoise spectra
+      console.log('denoise..')
     }
   }
 })

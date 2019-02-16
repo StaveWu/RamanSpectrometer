@@ -14,27 +14,63 @@ export default Vue.extend({
   data() {
     return {
       chartOptions: {
+        chart: {
+          type: 'line',
+          height: window.innerHeight - 200,
+          backgroundColor: null,
+        },
         title: {
-          text: "Raman Spectra"
+          text: "Raman Spectra",
+          style: {
+            color: '#A0A0A3',
+          },
         },
         yAxis: {
           title: {
-            text: "Intensity"
+            text: "Intensity",
+            style: {
+              color: '#A0A0A3',
+            },
+          },
+          labels: {
+            style: {
+              color: '#A0A0A3',
+            }
           }
         },
         xAxis: {
           title: {
-            text: "Raman shift"
+            text: "Raman shift",
+            style: {
+              color: '#A0A0A3',
+            },
+          },
+          labels: {
+            style: {
+              color: '#A0A0A3',
+            }
           }
         },
         series: [
           {
-            data: [1, 2, 3] // sample data
+            name: '',
+            data: null, // sample data
+            turboThreshold: 3500,
           }
         ],
-        credits: false
+        credits: false,
       }
     };
+  }, 
+  mounted() {
+    // adapt spectra card height to window height 
+    // so as to keep spectra fulfilling content
+    window.addEventListener('resize', () => {
+        this.chartOptions.chart.height = window.innerHeight - 200;
+    });
+    this.$root.$on('onImportingData', (arr) => {
+      this.chartOptions.series[0].data = arr;
+    });
   }
 });
 </script>

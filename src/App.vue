@@ -1,5 +1,5 @@
 <template>
-  <v-app dark>
+  <v-app dark class="global">
     <v-navigation-drawer clipped app class="elevation-12" right permanent>
       <tool-box></tool-box>
     </v-navigation-drawer>
@@ -11,11 +11,9 @@
 
     <v-content>
         <router-view></router-view>
-        <v-btn id="test" bottom left>test</v-btn>
     </v-content>
 
     <v-footer app fixed>
-      <v-spacer></v-spacer>
       <span>&copy; 2019</span>
     </v-footer>
   </v-app>
@@ -23,6 +21,7 @@
 
 <script>
 import ToolBox from '@/components/ToolBox.vue';
+import Vue from 'vue'
 
 export default {
   components: {
@@ -33,7 +32,7 @@ export default {
   }),
   props: {
     source: String
-  }
+  },
 };
 </script>
 
@@ -41,10 +40,8 @@ export default {
 html {
   overflow-y: auto;
 }
-#test {
-  position: fixed;
-  bottom: 30px;
-  left: 30px;
+.global {
+  font-family: '微软雅黑';
 }
 </style>
 

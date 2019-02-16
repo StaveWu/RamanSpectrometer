@@ -6,6 +6,10 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
+    "electron:build": "vue-cli-service electron:build",
+    "electron:serve": "vue-cli-service electron:serve",
+    "postinstall": "electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps",
     "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "vue-cli-service test:unit"
   },
@@ -33,11 +37,13 @@
     "@vue/cli-service": "^3.3.0",
     "@vue/test-utils": "^1.0.0-beta.20",
     "chai": "^4.1.2",
+    "electron": "^4.0.0",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.0.1",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",
     "typescript": "^3.0.0",
+    "vue-cli-plugin-electron-builder": "^1.0.0-rc.11",
     "vue-cli-plugin-vuetify": "^0.4.6",
     "vue-template-compiler": "^2.5.21",
     "vuetify-loader": "^1.0.5"
@@ -51,5 +57,6 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ]
+  ],
+  "main": "background.js"
 }
