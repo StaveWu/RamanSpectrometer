@@ -1,6 +1,10 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Home from './views/Home.vue';
+import Sample from './views/Sample.vue';
+import Preoprocess from '/views/Preoprocess.vue';
+import Recognition from '/views/Recognition.vue';
+import Purelibrary from '/views/Purelibrary.vue';
+import Calibration from '/views/Calibration.vue';
 
 Vue.use(Router);
 
@@ -10,16 +14,28 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: Home,
+      name: 'sample',
+      component: Sample,
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
-    },
+      path: '/preprocess',
+      name: 'preprocess',
+      component: Preoprocess
+    }, 
+    {
+      path: '/recognition',
+      name: 'recognition',
+      component: Recognition
+    }, 
+    {
+      path: '/purelibrary',
+      name: 'purelibrary',
+      component: Purelibrary
+    }, 
+    {
+      path: '/calibration',
+      name: 'calibration',
+      component: Calibration
+    }
   ],
 });
