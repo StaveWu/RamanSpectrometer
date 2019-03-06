@@ -19,26 +19,23 @@
 <script lang="ts">
 import Vue from 'vue'
 import SGFilter from '@/components/SGFilter.vue'
-export default Vue.extend({
+import Component from 'vue-class-component';
+
+@Component({
   components: {
-    'sg-filter': SGFilter,
-  }, 
-  data() {
-    return {
-      selected: 'S-G滤波',
-      items: ['S-G滤波', '小波变换', '去噪自编码器']
-    }
-  }, 
-  methods: {
-    isSG() {
-      return this.selected === 'S-G滤波';
-    },
-    denoise() {
-      // denoise spectra
-      console.log('denoise..')
-    }
+    'sg-filter': SGFilter
   }
 })
+export default class DenoiseSetting extends Vue {
+  selected: string = 'S-G滤波';
+  items: Array<string> = ['S-G滤波', '小波变换', '去噪自编码器'];
+  isSG(): boolean {
+    return this.selected === 'S-G滤波';
+  }
+  denoise(): void {
+    console.log("denoise...");
+  }
+}
 </script>
 
 <style>

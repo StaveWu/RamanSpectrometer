@@ -42,19 +42,18 @@
 
 <script lang="ts">
 import Vue from 'vue'
-export default Vue.extend({
-  data() {
-    return {
-      items: [
-        {title: '数据采集', icon: 'dashboard', to: '/'},
-        {title: '数据预处理', icon: 'dashboard', to: '/preprocess'},
-        {title: '组分识别', icon: 'dashboard', to: '/recognition'},
-        {title: '纯净光谱库', icon: 'dashboard', to: '/purelibrary'},
-        {title: '标定', icon: 'dashboard', to: '/calibration'},
-      ]
-    }
-  }
-})
+import { Component } from 'vue-property-decorator'
+
+@Component
+export default class MainApp extends Vue {
+  items: Array<any> = [
+    {title: '数据采集', icon: 'dashboard', to: '/'},
+    {title: '数据预处理', icon: 'dashboard', to: '/preprocess'},
+    {title: '组分识别', icon: 'dashboard', to: '/recognition'},
+    {title: '纯净光谱库', icon: 'dashboard', to: '/purelibrary'},
+    {title: '标定', icon: 'dashboard', to: '/calibration'}
+  ]
+}
 </script>
 
 <style>

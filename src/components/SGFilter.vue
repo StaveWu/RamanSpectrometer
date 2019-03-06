@@ -8,10 +8,10 @@
         <v-text-field v-model="order" type="number"></v-text-field>
       </v-flex>
       <v-flex md4 xs4 offset-xs1 offset-md1>
-        <v-slider v-model="windowWidth" label="窗口大小" thumb-label min="1" max="101" step="2"></v-slider>
+        <v-slider v-model="windowLength" label="窗口大小" thumb-label min="1" max="101" step="2"></v-slider>
       </v-flex>
       <v-flex md1 xs1 pl-2>
-        <v-text-field v-model="windowWidth" type="number"></v-text-field>
+        <v-text-field v-model="windowLength" type="number"></v-text-field>
       </v-flex>
     </v-layout>
   </v-container>
@@ -19,12 +19,11 @@
 
 <script lang="ts">
 import Vue from 'vue'
-export default Vue.extend({
-  data() {
-    return {
-      order: 3,
-      windowWidth: 9
-    }
-  }
-})
+import Component from 'vue-class-component';
+
+@Component
+export default class SGFilter extends Vue {
+  order: number = 3;
+  windowLength: number = 9;
+}
 </script>

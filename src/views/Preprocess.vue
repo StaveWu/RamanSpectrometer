@@ -24,10 +24,13 @@
 import Vue from 'vue'
 import DenoiseSetting from '@/components/DenoiseSetting.vue';
 import Spectra from '@/components/Spectra.vue';
-export default Vue.extend({
+import Component from 'vue-class-component';
+
+@Component({
   components: {
     DenoiseSetting,
     Spectra
   }
 })
+export default class PreprocessView extends Vue {}
 </script>

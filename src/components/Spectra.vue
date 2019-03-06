@@ -1,77 +1,47 @@
 <template>
     <v-card>
-      <highcharts :options="chartOptions"></highcharts>
+      <div id="container" style="width: 600px;height:400px;"></div>
     </v-card>
 </template>
 
-<script>
-import { Chart } from "highcharts-vue";
-import Vue from "vue";
-export default Vue.extend({
-  components: {
-    highcharts: Chart
-  },
-  data() {
-    return {
-      chartOptions: {
-        chart: {
-          type: 'line',
-          height: window.innerHeight - 200,
-          backgroundColor: null,
-        },
-        title: {
-          text: "Raman Spectra",
-          style: {
-            color: '#A0A0A3',
-          },
-        },
-        yAxis: {
-          title: {
-            text: "Intensity",
-            style: {
-              color: '#A0A0A3',
-            },
-          },
-          labels: {
-            style: {
-              color: '#A0A0A3',
-            }
-          }
-        },
-        xAxis: {
-          title: {
-            text: "Raman shift",
-            style: {
-              color: '#A0A0A3',
-            },
-          },
-          labels: {
-            style: {
-              color: '#A0A0A3',
-            }
-          }
-        },
-        series: [
-          {
-            name: '',
-            data: null, // sample data
-            turboThreshold: 3500,
-          }
-        ],
-        credits: false,
+<script lang="ts">
+import Vue from 'vue';
+import * as Highcharts from 'highcharts';
+import Component from "vue-class-component";
+
+@Component
+export default class Spectra extends Vue {
+  chartOptions: Highcharts.Options = {
+    chart: {
+      type: 'line',
+      backgroundColor: undefined
+    },
+    title: {
+      text: "Raman Spectra"
+    },
+    xAxis: {
+      title: {
+        text: 'Raman shift'
       }
-    };
-  }, 
+    },
+    yAxis: {
+      title: {
+        text: 'Intensity'
+      }
+    },
+    credits: {
+      enabled: false
+    }
+  };
   mounted() {
-    // adapt spectra card height to window height 
-    // so as to keep spectra fulfilling content
-    window.addEventListener('resize', () => {
-        this.chartOptions.chart.height = window.innerHeight - 200;
-    });
-    this.$root.$on('onImportingData', (arr) => {
-      this.chartOptions.series[0].data = arr;
-    });
+    let chart = Highcharts.chart('container', this.chartOptions);
+    chart.addSeries({
+      type: 'line', // in ts this property must be assigned
+      name: 'test',
+      data: new Array<number>(1, 2, 3, 2)
+    })
   }
-});
+}
 </script>
+
 
