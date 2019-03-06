@@ -1,21 +1,37 @@
 <template>
   <v-app class="global">
     <v-navigation-drawer clipped app class="grey lighten-3" width="200" permanent floating>
-      <v-list dense>
-      <v-list-tile
-        v-for="item in items"
-        :key="item.title"
-        :to="item.to"
-      >
-        <v-list-tile-action>
-          <v-icon>{{ item.icon }}</v-icon>
-        </v-list-tile-action>
+      <v-container>
+        <v-layout text-xs-center wrap>
+          <v-flex xs12>
+            <v-img
+              :src="require('./assets/logo.svg')"
+              class="my-1"
+              contain
+              height="50"
+            ></v-img>
+          </v-flex>
+          <v-flex xs12>
+            <h3>拉曼光谱仪</h3>
+          </v-flex>
+        </v-layout>
+      </v-container>
 
-        <v-list-tile-content>
-          <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
-    </v-list>
+      <v-list dense>
+        <v-list-tile
+          v-for="item in items"
+          :key="item.title"
+          :to="item.to"
+        >
+          <v-list-tile-action>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-tile-action>
+
+          <v-list-tile-content>
+            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list>
     </v-navigation-drawer>
 
     <v-content>

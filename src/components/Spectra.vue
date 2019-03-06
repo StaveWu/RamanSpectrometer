@@ -1,7 +1,7 @@
 <template>
-  <v-card>
-    <highcharts :options="chartOptions"></highcharts>
-  </v-card>
+    <v-card>
+      <highcharts :options="chartOptions"></highcharts>
+    </v-card>
 </template>
 
 <script>
