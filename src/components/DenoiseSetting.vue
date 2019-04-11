@@ -21,16 +21,27 @@ import Vue from 'vue'
 import SGFilter from '@/components/SGFilter.vue'
 import Component from 'vue-class-component';
 
+enum DenoiseAlogrithm {
+  SG = 'S-G滤波',
+  WAVELET = '小波变换',
+  DAE = '去噪自编码器'
+}
+
 @Component({
   components: {
     'sg-filter': SGFilter
   }
 })
 export default class DenoiseSetting extends Vue {
-  selected: string = 'S-G滤波';
-  items: Array<string> = ['S-G滤波', '小波变换', '去噪自编码器'];
+  selected: DenoiseAlogrithm = DenoiseAlogrithm.SG;
+  items: Array<DenoiseAlogrithm> = [
+    DenoiseAlogrithm.SG, 
+    DenoiseAlogrithm.WAVELET, 
+    DenoiseAlogrithm.DAE
+  ];
+  
   isSG(): boolean {
-    return this.selected === 'S-G滤波';
+    return this.selected === DenoiseAlogrithm.SG;
   }
   denoise(): void {
     console.log("denoise...");

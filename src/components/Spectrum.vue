@@ -1,21 +1,16 @@
 <template>
-    <div class="highcharts" :id="container" :title="title" :data="data"></div>
+    <div class="highcharts" :id="container"></div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
 import * as Highcharts from 'highcharts';
-import Component from "vue-class-component";
+import { Component, Prop, Watch } from "vue-property-decorator";
 
-@Component({
-    props: [
-      'title',
-      'data',
-    ]
-})
+@Component
 export default class Spectrum extends Vue {
-  title?: string;
-  data?: Array<number>;
+  @Prop() title!: string;
+  @Prop() data!: Array<number>;
   chart?: Highcharts.Chart;
   container: string;
   static id: number = 0;
@@ -26,6 +21,19 @@ export default class Spectrum extends Vue {
     this.container = 'container' + Spectrum.id;
   }
 
+  @Watch('title')
+  updateTitle() {
+    if (this.chart !== undefined)
+      this.chart.title.update({text: this.title});
+  }
+
+  @Watch('data')
+  updateData() {
+    if (this.chart !== undefined) {
+      this.chart.series[0].setData(this.data);
+    }
+  }
+
   mounted() {
     this.chart = new Highcharts.Chart(this.container, {
       chart: {
@@ -34,7 +42,7 @@ export default class Spectrum extends Vue {
       },
       xAxis: {
         title: {
-          text: 'Raman shift'
+          text: 'Wavenumbers'
         }
       },
       yAxis: {
@@ -49,7 +57,7 @@ export default class Spectrum extends Vue {
 
     this.chart.addSeries(<Highcharts.SeriesLineOptions>{
       data: this.data
-    })
+    });
     this.chart.title.update({text: this.title});
   }
 }
