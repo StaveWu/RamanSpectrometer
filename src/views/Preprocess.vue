@@ -8,16 +8,20 @@
         <denoise-setting/>
       </v-tab-item>
       <v-tab-item :key="2">
-        <h3>基线</h3>
+        <debackground-setting></debackground-setting>
       </v-tab-item>
       <v-tab-item :key="3">
-        <h3>组分识别</h3>
+        <detect-setting></detect-setting>
       </v-tab-item>
     </v-tabs>
 
     <v-container fluid>
       <v-layout wrap>
-        <v-flex>
+        <v-flex pb-2 xs12>
+          <h3>波形显示</h3>
+        </v-flex>
+
+        <v-flex xs12>
           <v-card>
             <v-responsive :aspect-ratio="16/9">
               <spectrum :title="title" :data="data"></spectrum>
@@ -33,12 +37,17 @@
 <script lang="ts">
 import Vue from 'vue'
 import DenoiseSetting from '@/components/DenoiseSetting.vue';
+import DebackgroundSetting from '@/components/DebackgroundSetting.vue';
+import DetectSetting from '@/components/DetectSetting.vue';
+
 import Spectrum from '@/components/Spectrum.vue';
 import Component from 'vue-class-component';
 
 @Component({
   components: {
     DenoiseSetting,
+    DebackgroundSetting,
+    DetectSetting,
     Spectrum,
   }
 })

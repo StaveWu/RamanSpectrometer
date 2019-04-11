@@ -1,16 +1,22 @@
 <template>
   <v-container fluid>
     <v-layout wrap>
-      <v-flex shrink text-xs-left>
+      <v-flex text-xs-left md12 xs12 lg12>
         <v-combobox v-model="selected" :items="items" chips label="请选择去噪算法"></v-combobox>
       </v-flex>
-      <v-flex grow text-xs-right>
-        <v-btn color="primary" @click="denoise()">应用</v-btn>
-        <v-btn color="primary">确认</v-btn>
-        <v-btn color="primary">取消</v-btn>
+
+      <v-flex pb-2 xs12>
+        <h3>参数设置</h3>
       </v-flex>
-      <v-flex md12 xs12>
+      
+      <v-flex>
         <sg-filter v-if="isSG()"></sg-filter>
+      </v-flex>
+
+      <v-flex text-xs-right pt-3>
+        <v-btn color="primary" @click="denoise()">应用</v-btn>
+        <v-btn color="primary">确定</v-btn>
+        <v-btn color="primary">取消</v-btn>
       </v-flex>
     </v-layout>
   </v-container>

@@ -1,6 +1,6 @@
 <template>
-  <v-app class="global">
-    <v-navigation-drawer clipped app class="grey lighten-3" width="180" permanent floating>
+  <v-app class="global" :dark="dark">
+    <v-navigation-drawer clipped app width="180" :class="{'grey': !dark, 'lighten-3': !dark}" permanent floating>
       <v-container>
         <v-layout text-xs-center wrap>
           <v-flex xs12>
@@ -46,6 +46,7 @@ import { Component } from 'vue-property-decorator'
 
 @Component
 export default class MainApp extends Vue {
+  dark: boolean = false;
   items: Array<any> = [
     {title: '首页', icon: 'home', to: '/'},
     {title: '光谱识别', icon: 'search', to: '/preprocess'},
