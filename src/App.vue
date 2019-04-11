@@ -1,6 +1,6 @@
 <template>
   <v-app class="global">
-    <v-navigation-drawer clipped app class="grey lighten-3" width="200" permanent floating>
+    <v-navigation-drawer clipped app class="grey lighten-3" width="180" permanent floating>
       <v-container>
         <v-layout text-xs-center wrap>
           <v-flex xs12>
@@ -12,7 +12,7 @@
             ></v-img>
           </v-flex>
           <v-flex xs12>
-            <h3>拉曼光谱仪</h3>
+            <h3>拉曼光谱识别</h3>
           </v-flex>
         </v-layout>
       </v-container>
@@ -47,11 +47,10 @@ import { Component } from 'vue-property-decorator'
 @Component
 export default class MainApp extends Vue {
   items: Array<any> = [
-    {title: '数据采集', icon: 'dashboard', to: '/'},
-    {title: '数据预处理', icon: 'dashboard', to: '/preprocess'},
-    {title: '组分识别', icon: 'dashboard', to: '/recognition'},
-    {title: '纯净光谱库', icon: 'dashboard', to: '/purelibrary'},
-    {title: '标定', icon: 'dashboard', to: '/calibration'}
+    {title: '首页', icon: 'home', to: '/'},
+    {title: '光谱识别', icon: 'search', to: '/preprocess'},
+    {title: '组分库', icon: 'dashboard', to: '/purelibrary'},
+    {title: '设置', icon: 'settings'},
   ]
 }
 </script>

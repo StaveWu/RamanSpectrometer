@@ -13,7 +13,11 @@
     <v-container fluid>
       <v-layout wrap>
         <v-flex>
-          <spectra></spectra>
+          <v-card>
+            <v-responsive :aspect-ratio="16/9">
+              <spectrum title="interesting" :data="data"></spectrum>
+            </v-responsive>
+          </v-card>
         </v-flex>
       </v-layout>
     </v-container>
@@ -23,14 +27,16 @@
 <script lang="ts">
 import Vue from 'vue'
 import DenoiseSetting from '@/components/DenoiseSetting.vue';
-import Spectra from '@/components/Spectra.vue';
+import Spectrum from '@/components/Spectrum.vue';
 import Component from 'vue-class-component';
 
 @Component({
   components: {
     DenoiseSetting,
-    Spectra
+    Spectrum
   }
 })
-export default class PreprocessView extends Vue {}
+export default class PreprocessView extends Vue {
+  data: Array<number> = [1, 2, 4, 8];
+}
 </script>

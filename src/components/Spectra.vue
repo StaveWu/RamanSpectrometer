@@ -1,6 +1,8 @@
 <template>
     <v-card>
-      <div id="container" style="width: 600px;height:400px;"></div>
+      <v-responsive :aspect-ratio="16/9">
+        <div id="container"></div>
+      </v-responsive>
     </v-card>
 </template>
 
