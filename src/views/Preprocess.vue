@@ -24,7 +24,7 @@
         <v-flex xs12>
           <v-card>
             <v-responsive :aspect-ratio="16/9">
-              <spectrum :title="title" :data="data"></spectrum>
+              <spectrum :datas="datas"></spectrum>
             </v-responsive>
           </v-card>
         </v-flex>
@@ -42,6 +42,7 @@ import DetectSetting from '@/components/DetectSetting.vue';
 
 import Spectrum from '@/components/Spectrum.vue';
 import Component from 'vue-class-component';
+import {Series} from '@/utils'
 
 @Component({
   components: {
@@ -52,21 +53,20 @@ import Component from 'vue-class-component';
   }
 })
 export default class PreprocessView extends Vue {
-  data: Array<number> = [];
-  title: string = 'Raman Spectra';
+  datas: Array<Series> = [];
 
   constructor() {
     super();
     
     // the first time spectrum can't catch this event, and then spectrum is lost.
-    this.data = this.getSpectraData();
+    this.datas.push(this.getSpectraData());
   }
 
-  private getSpectraData(): Array<number> {
+  private getSpectraData(): Series {
     // init data from global attribute.
     let res = Vue.prototype.spectraData;
     if (res === undefined) {
-      res = [];
+      res = {name: '', data: []};
     }
     return res;
   }

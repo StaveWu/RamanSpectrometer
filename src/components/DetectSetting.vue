@@ -26,12 +26,12 @@
             <template slot="expand" slot-scope="props">
               <v-card flat>
                 <v-responsive :aspect-ratio="16/9">
-                  <spectrum title="details" :data="data"></spectrum>
+                  <spectrum :datas="datas"></spectrum>
                 </v-responsive>
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn outline color="warning">预测有误</v-btn>
+                  <v-btn outline color="warning">预测错误?</v-btn>
                 </v-card-actions>
               </v-card>
             </template>
@@ -47,6 +47,7 @@
 import Vue from 'vue'
 import Component from 'vue-class-component';
 import Spectrum from '@/components/Spectrum.vue';
+import {Series} from '@/utils'
 
 @Component({
   components: {
@@ -56,7 +57,7 @@ import Spectrum from '@/components/Spectrum.vue';
 export default class DetectSetting extends Vue {
   selected: Array<string> = ['乙醇', 'DMSO'];
   componentsToDetect: Array<string> = ['甲醇', '乙醇', 'DMF', 'DMSO'];
-  data: Array<number> = [1, 2, 4, 8, 10];
+  datas: Array<Series> = [{name: '', data: [1, 2, 3, 9, 12]}];
   isDetected: boolean = false;
 
   expand: boolean = false;

@@ -22,9 +22,9 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/Preprocess.vue'),
     },
     {
-      path: '/recognition',
-      name: 'recognition',
-      component: () => import('./views/Recognition.vue'),
+      path: '/settings',
+      name: 'settings',
+      component: () => import('./views/Settings.vue'),
     },
     {
       path: '/purelibrary',
@@ -32,9 +32,9 @@ export default new Router({
       component: () => import('./views/Purelibrary.vue'),
     },
     {
-      path: '/calibration',
-      name: 'calibration',
-      component: () => import('./views/Calibration.vue'),
+      path: '/batchdetection',
+      name: 'batchdetection',
+      component: () => import('./views/BatchDetection.vue'),
     },
   ],
 });

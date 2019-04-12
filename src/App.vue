@@ -1,6 +1,6 @@
 <template>
   <v-app class="global" :dark="dark">
-    <v-navigation-drawer clipped app width="180" :class="{'grey': !dark, 'lighten-3': !dark}" permanent floating>
+    <v-navigation-drawer clipped app width="170" :class="{'grey': !dark, 'lighten-3': !dark}" permanent floating>
       <v-container>
         <v-layout text-xs-center wrap>
           <v-flex xs12>
@@ -37,6 +37,7 @@
     <v-content>
         <router-view></router-view>
     </v-content>
+
   </v-app>
 </template>
 
@@ -46,13 +47,31 @@ import { Component } from 'vue-property-decorator'
 
 @Component
 export default class MainApp extends Vue {
-  dark: boolean = false;
+  dark: boolean;
   items: Array<any> = [
     {title: '首页', icon: 'home', to: '/'},
-    {title: '光谱识别', icon: 'search', to: '/preprocess'},
-    {title: '组分库', icon: 'dashboard', to: '/purelibrary'},
-    {title: '设置', icon: 'settings'},
+    {title: '识别', icon: 'search', to: '/preprocess'},
+    {title: '批量识别', icon: 'youtube_searched_for', to: '/batchdetection'},
+    {title: '组分库', icon: 'import_contacts', to: '/purelibrary'},
+    {title: '设置', icon: 'settings', to: '/settings'},
   ]
+
+  constructor() {
+    super();
+    this.dark = this.getDark();
+  }
+
+  beforeUpdate() {
+    this.dark = this.getDark();
+  }
+
+  private getDark() {
+    let res = Vue.prototype.dark;
+    if (res === undefined) {
+      res = false;
+    }
+    return res;
+  }
 }
 </script>
 

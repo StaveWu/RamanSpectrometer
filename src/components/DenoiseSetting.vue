@@ -10,13 +10,15 @@
       </v-flex>
       
       <v-flex>
-        <sg-filter v-if="isSG()"></sg-filter>
+        <v-card>
+          <sg-filter v-if="isSG()"></sg-filter>
+        </v-card>
       </v-flex>
 
       <v-flex text-xs-right pt-3>
         <v-btn color="primary" @click="denoise()">应用</v-btn>
         <v-btn color="primary">确定</v-btn>
-        <v-btn color="primary">取消</v-btn>
+        <v-btn flat>取消</v-btn>
       </v-flex>
     </v-layout>
   </v-container>
