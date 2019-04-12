@@ -51,7 +51,8 @@ export default class MainApp extends Vue {
   items: Array<any> = [
     {title: '首页', icon: 'home', to: '/'},
     {title: '识别', icon: 'search', to: '/preprocess'},
-    {title: '组分库', icon: 'dashboard', to: '/purelibrary'},
+    {title: '批量识别', icon: 'youtube_searched_for', to: '/batchdetection'},
+    {title: '组分库', icon: 'import_contacts', to: '/purelibrary'},
     {title: '设置', icon: 'settings', to: '/settings'},
   ]
 

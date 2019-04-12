@@ -32,9 +32,9 @@ export default new Router({
       component: () => import('./views/Purelibrary.vue'),
     },
     {
-      path: '/calibration',
-      name: 'calibration',
-      component: () => import('./views/Calibration.vue'),
+      path: '/batchdetection',
+      name: 'batchdetection',
+      component: () => import('./views/BatchDetection.vue'),
     },
   ],
 });
