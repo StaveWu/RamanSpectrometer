@@ -37,6 +37,7 @@
     <v-content>
         <router-view></router-view>
     </v-content>
+
   </v-app>
 </template>
 
@@ -46,13 +47,30 @@ import { Component } from 'vue-property-decorator'
 
 @Component
 export default class MainApp extends Vue {
-  dark: boolean = false;
+  dark: boolean;
   items: Array<any> = [
     {title: '首页', icon: 'home', to: '/'},
-    {title: '光谱识别', icon: 'search', to: '/preprocess'},
+    {title: '识别', icon: 'search', to: '/preprocess'},
     {title: '组分库', icon: 'dashboard', to: '/purelibrary'},
-    {title: '设置', icon: 'settings'},
+    {title: '设置', icon: 'settings', to: '/settings'},
   ]
+
+  constructor() {
+    super();
+    this.dark = this.getDark();
+  }
+
+  beforeUpdate() {
+    this.dark = this.getDark();
+  }
+
+  private getDark() {
+    let res = Vue.prototype.dark;
+    if (res === undefined) {
+      res = false;
+    }
+    return res;
+  }
 }
 </script>
 
