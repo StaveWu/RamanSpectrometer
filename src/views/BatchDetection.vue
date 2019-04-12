@@ -128,7 +128,7 @@ interface ResultRowViewObject {
   }
 })
 export default class BatchDetection extends Vue {
-  selected: Array<string> = ['乙醇', 'DMSO'];
+  selected: Array<string> = ['甲醇', '乙醇', 'DMF', 'DMSO'];
   componentsToDetect: Array<string> = ['甲醇', '乙醇', 'DMF', 'DMSO'];
   datas: Array<Series> = [{name: '', data: [1, 2, 3, 9, 12]}];
   isDetected = false;

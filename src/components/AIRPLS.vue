@@ -1,13 +1,11 @@
 <template>
-  <v-card>
-    <v-container fluid>
-      <v-layout wrap>
-        <v-flex xs5 sm5>
-          <v-text-field v-model="lambda" type="number" label="平滑系数"></v-text-field>
-        </v-flex>
-      </v-layout>
-    </v-container>
-  </v-card>
+  <v-container fluid>
+    <v-layout wrap>
+      <v-flex xs5 sm5>
+        <v-text-field v-model="lambda" type="number" label="平滑系数"></v-text-field>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script lang="ts">

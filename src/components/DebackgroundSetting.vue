@@ -10,7 +10,9 @@
       </v-flex>
       
       <v-flex text-xs-left md12 xs12 sm12 lg12>
-        <air-pls v-if="isAIRPLS()"></air-pls>
+        <v-card>
+          <air-pls v-if="isAIRPLS()"></air-pls>
+        </v-card>
       </v-flex>
 
       <v-flex xs12 md12 lg12 text-xs-right pt-3>
