@@ -1,6 +1,6 @@
 <template>
   <v-app class="global" :dark="dark">
-    <v-navigation-drawer clipped app width="180" :class="{'grey': !dark, 'lighten-3': !dark}" permanent floating>
+    <v-navigation-drawer clipped app width="170" :class="{'grey': !dark, 'lighten-3': !dark}" permanent floating>
       <v-container>
         <v-layout text-xs-center wrap>
           <v-flex xs12>

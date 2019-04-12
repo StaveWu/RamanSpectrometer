@@ -9,8 +9,16 @@ import { Component, Prop, Watch } from "vue-property-decorator";
 
 @Component
 export default class Spectrum extends Vue {
-  @Prop() title!: string;
-  @Prop() data!: Array<number>;
+  @Prop({
+    default: ""
+  }) 
+  title!: string;
+
+  @Prop({
+    default: () => new Array<number>()
+  })
+  data!: Array<number>;
+
   chart?: Highcharts.Chart;
   container: string;
   static id: number = 0;
