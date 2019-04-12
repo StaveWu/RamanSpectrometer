@@ -31,7 +31,7 @@
               @click="openSpectra(i - 1)" 
               to="/preprocess">
               <v-responsive :aspect-ratio="4/3">
-                <spectrum :title="title" :data="spectras[i - 1]"></spectrum>
+                <spectrum :datas="[spectras[i - 1]]"></spectrum>
               </v-responsive>
             </v-card>
           </v-hover>
@@ -48,6 +48,7 @@ import Component from 'vue-class-component';
 import Spectrum from '@/components/Spectrum.vue';
 import {remote} from 'electron';
 import fs from 'fs';
+import {Series} from '@/utils'
 
 @Component({
   components: {
@@ -56,12 +57,17 @@ import fs from 'fs';
 })
 export default class Home extends Vue {
   numRecentSpectras: number;
-  spectras: Array<Array<number>>;
-  title: string = 'hello';
+  spectras: Array<Series>;
 
   constructor() {
     super();
-    this.spectras = [[1, 2, 4, 8], [3, 2, 5, 7], [4, 9, 2, 1], [3, 2, 1, 3], [3, 2, 7, 3]];
+    this.spectras = [
+      {name: '', data: [1, 2, 4, 8]}, 
+      {name: '', data: [1, 2, 4, 8]},
+      {name: '', data: [1, 2, 4, 8]},
+      {name: '', data: [1, 2, 4, 8]},
+      {name: '', data: [1, 2, 4, 8]},
+    ];
     this.numRecentSpectras = this.spectras.length;
   }
 
@@ -80,14 +86,14 @@ export default class Home extends Vue {
         } else {
           let arr = new Array<number>();
           data.toString().trim().split('\n').map(line => arr.push(parseFloat(line.split('\t')[1])));
-          this.postData(arr);
+          this.postData({name: '', data: arr});
           this.$router.push('/preprocess');
         }
       })
     }
   }
 
-  private postData(data: Array<number>) {
+  private postData(data: Series) {
     // post data by global attribute of vue.
     Vue.prototype.spectraData = data;
   }

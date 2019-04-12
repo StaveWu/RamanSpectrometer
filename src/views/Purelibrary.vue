@@ -23,7 +23,7 @@
               <v-flex>
                 <v-card flat>
                   <v-responsive :aspect-ratio="16/9">
-                    <spectrum :data="data"></spectrum>
+                    <spectrum :datas="[editedItem.series]"></spectrum>
                   </v-responsive>
                 </v-card>
               </v-flex>
@@ -77,7 +77,7 @@
               <template slot="expand" slot-scope="props">
                 <v-card flat>
                   <v-responsive :aspect-ratio="16/9">
-                    <spectrum></spectrum>
+                    <spectrum :datas="[props.item.series]"></spectrum>
                   </v-responsive>
                 </v-card>
               </template>
@@ -96,11 +96,13 @@ import Component from 'vue-class-component';
 import Spectrum from '@/components/Spectrum.vue';
 import {remote} from 'electron';
 import fs from 'fs';
+import {Series} from '@/utils';
 
 interface RowViewObject { // 定义行对象
   id: number;
   componentName: string;
   formula: string;
+  series: Series;
 }
 
 @Component({
@@ -111,9 +113,8 @@ interface RowViewObject { // 定义行对象
 export default class PureLibrary extends Vue {
   dialog: boolean = false;
   editedIndex: number = -1;
-  editedItem: RowViewObject = {id: -1, componentName: '', formula: ''};
-  defaultItem: RowViewObject = {id: -1, componentName: '', formula: ''};
-  data: Array<number> = [];
+  editedItem: RowViewObject = {id: -1, componentName: '', formula: '', series: {name: '', data: []}};
+  defaultItem: RowViewObject = {id: -1, componentName: '', formula: '', series: {name: '', data: []}};
 
   expand: boolean = false;
   headers: Array<any> = [
@@ -123,12 +124,12 @@ export default class PureLibrary extends Vue {
     {text: '操作', value: 'actions', sortable: false}
   ];
   components: Array<RowViewObject> = [
-    {id: 1, componentName: '乙醇', formula: 'C2H5OH'},
-    {id: 2, componentName: 'DMSO', formula: '100%'},
-    {id: 3, componentName: 'DMF', formula: '8%'},
-    {id: 4, componentName: '二甲醚', formula: '8%'},
-    {id: 5, componentName: '四氯化碳', formula: '8%'},
-    {id: 6, componentName: '乙酸', formula: '8%'},
+    {id: 1, componentName: '乙醇', formula: 'C2H5OH', series: {name: '', data: [1, 2, 3, 2]}},
+    {id: 2, componentName: 'DMSO', formula: '', series: {name: '', data: [2, 22, 4, 7]}},
+    {id: 3, componentName: 'DMF', formula: '', series: {name: '', data: [2, 22, 4, 7]}},
+    {id: 4, componentName: '二甲醚', formula: '', series: {name: '', data: [2, 22, 4, 7]}},
+    {id: 5, componentName: '四氯化碳', formula: '', series: {name: '', data: [2, 22, 4, 7]}},
+    {id: 6, componentName: '乙酸', formula: 'CH3COOH', series: {name: '', data: [2, 22, 4, 7]}},
   ]
 
   newItem() {
@@ -179,7 +180,7 @@ export default class PureLibrary extends Vue {
         } else {
           let arr = new Array<number>();
           data.toString().trim().split('\n').map(line => arr.push(parseFloat(line.split('\t')[1])));
-          this.data = arr;
+          this.editedItem.series = {name: '', data: arr};
         }
       })
     }
