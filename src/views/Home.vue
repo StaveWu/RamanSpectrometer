@@ -1,5 +1,9 @@
 <template>
   <div>
+    <v-alert :value="alertShow" type="warning">
+      {{alertMessage}}
+    </v-alert>
+
     <v-container>
       <v-layout wrap>
         <v-flex xs12 pb-2>
@@ -7,7 +11,7 @@
         </v-flex>
         <v-flex xs12 text-xs-left>
           <v-btn color="primary" @click="importSpectraFromFile()">
-            <v-icon left dark>cloud_upload</v-icon>
+            <v-icon left dark>folder_open</v-icon>
             从本地打开
           </v-btn>
         </v-flex>
@@ -48,7 +52,8 @@ import Component from 'vue-class-component';
 import Spectrum from '@/components/Spectrum.vue';
 import {remote} from 'electron';
 import fs from 'fs';
-import {Series} from '@/utils'
+import {Series} from '@/utils';
+import Axios, { AxiosResponse } from 'axios'
 
 @Component({
   components: {
@@ -56,19 +61,27 @@ import {Series} from '@/utils'
   }
 })
 export default class Home extends Vue {
-  numRecentSpectras: number;
-  spectras: Array<Series>;
+  numRecentSpectras: number = 0;
+  spectras: Array<Series> = [];
+  alertMessage: string = '';
+  alertShow: boolean = false;
 
   constructor() {
     super();
-    this.spectras = [
-      {name: '', data: [1, 2, 4, 8]}, 
-      {name: '', data: [1, 2, 4, 8]},
-      {name: '', data: [1, 2, 4, 8]},
-      {name: '', data: [1, 2, 4, 8]},
-      {name: '', data: [1, 2, 4, 8]},
-    ];
-    this.numRecentSpectras = this.spectras.length;
+  }
+
+  created() {
+    Axios.get('http://127.0.0.1:5000/api/v1/spectras?count=6')
+      .then((response: AxiosResponse) => {
+        for (const s of response.data) {
+          this.spectras.push({name: s.name, data: s.data});
+          this.numRecentSpectras = this.spectras.length;
+        }
+      })
+      .catch((error: any) => {
+        this.alertMessage = '无法连接后台服务器';
+        this.alertShow = true;
+      });
   }
 
   openSpectra(i: number) {

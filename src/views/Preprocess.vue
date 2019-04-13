@@ -62,6 +62,23 @@ export default class PreprocessView extends Vue {
     this.datas.push(this.getSpectraData());
   }
 
+  created() {
+    this.$root.$on('preprocessReceived', (name: string, data: Array<any>) => {
+      this.datas.push({name: name, data: data});
+    });
+    this.$root.$on('preprocessConfirmed', () => {
+      if (this.datas.length == 0) {
+        return;
+      }
+      this.datas.splice(0, 1);
+    });
+  }
+
+  beforeDestroy() {
+    this.$root.$off('preprocessReceived');
+    this.$root.$off('preprocessConfirmed');
+  }
+
   private getSpectraData(): Series {
     // init data from global attribute.
     let res = Vue.prototype.spectraData;

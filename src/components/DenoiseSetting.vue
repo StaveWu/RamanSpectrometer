@@ -5,7 +5,7 @@
         <v-combobox v-model="selected" :items="items" chips label="请选择去噪算法"></v-combobox>
       </v-flex>
 
-      <v-flex pb-2 xs12>
+      <v-flex pb-2 xs12 v-if="isSG()">
         <h3>参数设置</h3>
       </v-flex>
       
@@ -17,8 +17,8 @@
 
       <v-flex text-xs-right pt-3>
         <v-btn color="primary" @click="denoise()">应用</v-btn>
-        <v-btn color="primary">确定</v-btn>
-        <v-btn flat>取消</v-btn>
+        <v-btn color="primary" @click="confirm()">确定</v-btn>
+        <v-btn flat>撤销</v-btn>
       </v-flex>
     </v-layout>
   </v-container>
@@ -28,6 +28,7 @@
 import Vue from 'vue'
 import SGFilter from '@/components/SGFilter.vue'
 import Component from 'vue-class-component';
+import Axios, { AxiosResponse } from 'axios'
 
 enum DenoiseAlogrithm {
   SG = 'S-G滤波',
@@ -52,7 +53,16 @@ export default class DenoiseSetting extends Vue {
     return this.selected === DenoiseAlogrithm.SG;
   }
   denoise(): void {
-    console.log("denoise...");
+    Axios.get('http://127.0.0.1:5000/api/v1/spectras/1/denoises/dae')
+      .then((response: AxiosResponse) => {
+        this.$root.$emit('preprocessReceived', response.data.name, response.data.data);
+      })
+      .catch((error: any) => {
+        console.log(error);
+      });
+  }
+  confirm() {
+    this.$root.$emit('preprocessConfirmed');
   }
 }
 </script>
