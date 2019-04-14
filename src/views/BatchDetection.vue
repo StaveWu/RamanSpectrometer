@@ -138,7 +138,6 @@ export default class BatchDetection extends Vue {
     {file: '1hao-1s', folder: 'E:/04文档/硕士毕业设计/数据/烟草/样品'},
     {file: '2hao-1s', folder: 'E:/04文档/硕士毕业设计/数据/烟草/样品'},
     {file: '3hao-1s', folder: 'E:/04文档/硕士毕业设计/数据/烟草/样品'},
-    {file: '4hao-1s', folder: 'E:/04文档/硕士毕业设计/数据/烟草/样品'},
   ]
 
   headers: Array<any> = [];
@@ -160,7 +159,6 @@ export default class BatchDetection extends Vue {
       {file:'1hao-1s', probabilities: ['100%', '95%', '93%', '99%']},
       {file:'2hao-1s', probabilities: ['100%', '95%', '93%', '99%']},
       {file:'3hao-1s', probabilities: ['100%', '95%', '93%', '99%']},
-      {file:'4hao-1s', probabilities: ['100%', '95%', '93%', '99%']},
     ]
     this.isDetected = true;
     this.showFeedbackPart = false;

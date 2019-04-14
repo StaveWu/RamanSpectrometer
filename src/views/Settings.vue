@@ -3,7 +3,7 @@
     <v-container fluid>
       <v-layout wrap>
         <v-flex xs12>
-          <h3>波数区段选择</h3>
+          <h3>光谱波段选择</h3>
         </v-flex>
 
         <v-flex
@@ -139,7 +139,8 @@ enum Alogrithm {
   WAVELET = '小波变换',
   DAE = '去噪自编码器',
   AIRPLS = 'airPLS',
-  POLYFIT = '多项式拟合'
+  POLYFIT = '多项式拟合',
+  SVD_MAD = '奇异值分解-中位数绝对偏差'
 }
 
 @Component({
@@ -160,7 +161,8 @@ export default class Settings extends Vue {
     Alogrithm.WAVELET, 
     Alogrithm.DAE,
     Alogrithm.AIRPLS,
-    Alogrithm.POLYFIT
+    Alogrithm.POLYFIT,
+    Alogrithm.SVD_MAD
   ]; 
 
   @Watch('dark')
