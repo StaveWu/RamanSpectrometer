@@ -137,7 +137,7 @@ import airPLS from '@/components/AIRPLS.vue'
 enum Alogrithm {
   SG = 'S-G滤波',
   WAVELET = '小波变换',
-  DAE = '去噪自编码器',
+  DAE = '卷积去噪自编码器',
   AIRPLS = 'airPLS',
   POLYFIT = '多项式拟合',
   SVD_MAD = '奇异值分解-中位数绝对偏差'

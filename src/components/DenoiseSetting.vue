@@ -33,7 +33,7 @@ import Axios, { AxiosResponse } from 'axios'
 enum DenoiseAlogrithm {
   SG = 'S-G滤波',
   WAVELET = '小波变换',
-  DAE = '去噪自编码器'
+  DAE = '卷积去噪自编码器'
 }
 
 @Component({

@@ -132,10 +132,10 @@ export default class PureLibrary extends Vue {
   ];
   components: Array<RowViewObject> = [
     {id: 1, componentName: '乙醇', formula: 'C2H5OH', state: 'online', series: {name: '', data: [1, 2, 3, 2]}},
-    {id: 2, componentName: 'DMSO', formula: '', state: 'online', series: {name: '', data: [2, 22, 4, 7]}},
-    {id: 3, componentName: 'DMF', formula: '', state: 'busy', series: {name: '', data: [2, 22, 4, 7]}},
-    {id: 4, componentName: '二甲醚', formula: '', state: 'online', series: {name: '', data: [2, 22, 4, 7]}},
-    {id: 5, componentName: '四氯化碳', formula: '', state: 'offline', series: {name: '', data: [2, 22, 4, 7]}},
+    {id: 2, componentName: 'DMSO', formula: '(CH3)2SO', state: 'busy', series: {name: '', data: [2, 22, 4, 7]}},
+    {id: 3, componentName: 'DMF', formula: 'C3H7NO', state: 'online', series: {name: '', data: [2, 22, 4, 7]}},
+    {id: 4, componentName: '二甲醚', formula: 'C2H6O', state: 'online', series: {name: '', data: [2, 22, 4, 7]}},
+    {id: 5, componentName: '四氯化碳', formula: 'CCl4', state: 'offline', series: {name: '', data: [2, 22, 4, 7]}},
     {id: 6, componentName: '乙酸', formula: 'CH3COOH', state: 'offline', series: {name: '', data: [2, 22, 4, 7]}},
   ]
 

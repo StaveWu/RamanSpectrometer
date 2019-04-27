@@ -97,9 +97,12 @@ export default class Home extends Vue {
         if (err) {
           return console.error(err);
         } else {
-          let arr = new Array<number>();
-          data.toString().trim().split('\n').map(line => arr.push(parseFloat(line.split('\t')[1])));
-          this.postData({name: '', data: arr});
+          let points = new Array<Array<number>>();
+          data.toString().trim().split('\n').map(line => {
+            let s = line.split('\t');
+            points.push([parseFloat(s[0]), parseFloat(s[1])]);
+          });
+          this.postData({name: '10hao-100%-1s-_M', data: points});
           this.$router.push('/preprocess');
         }
       })
