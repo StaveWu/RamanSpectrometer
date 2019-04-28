@@ -48,6 +48,7 @@ import ConventionalSetting from '@/components/ConventionalSetting.vue';
 import Spectrum from '@/components/Spectrum.vue';
 import Component from 'vue-class-component';
 import {Series} from '@/utils'
+import store from '../store'
 
 @Component({
   components: {
@@ -63,8 +64,7 @@ export default class PreprocessView extends Vue {
 
   constructor() {
     super();
-    
-    // the first time spectrum can't catch this event, and then spectrum is lost.
+
     this.datas.push(this.getSpectraData());
   }
 
@@ -87,11 +87,12 @@ export default class PreprocessView extends Vue {
 
   private getSpectraData(): Series {
     // init data from global attribute.
-    let res = Vue.prototype.spectraData;
-    if (res === undefined) {
-      res = {name: '', data: []};
-    }
-    return res;
+    // let res = Vue.prototype.spectraData;
+    // if (res === undefined) {
+    //   res = {name: '', data: []};
+    // }
+    // return res;
+    return store.state.spectra;
   }
 }
 </script>

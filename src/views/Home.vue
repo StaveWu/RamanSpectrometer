@@ -60,7 +60,9 @@ import Spectrum from '@/components/Spectrum.vue';
 import {remote} from 'electron';
 import fs from 'fs';
 import {Series} from '@/utils';
-import Axios, { AxiosResponse } from 'axios'
+import Axios, { AxiosResponse } from 'axios';
+import store from '../store'
+import path from 'path'
 
 @Component({
   components: {
@@ -107,11 +109,14 @@ export default class Home extends Vue {
     } 
     else {
       // if select many, we only choose the first one
-      fs.readFile(selectedFilePaths[0], (error, data) => {
-        if (error) {
-          return console.error(error);
+      fs.readFile(selectedFilePaths[0], (err, data) => {
+        if (err) {
+          return console.error(err);
         } 
         else {
+          // get filename as spectra's name
+          let name = path.parse(selectedFilePaths[0]).name;
+          // access points
           let points = new Array<Array<number>>();
           data.toString().trim().split('\n').map(line => {
             let s = line.split('\t');
@@ -119,7 +124,7 @@ export default class Home extends Vue {
           });
           // we should post data before preprocess page created, since 
           // this page need data to construct.
-          this.postData({name: '10hao-100%-1s-_M', data: points});
+          this.postData({name: name, data: points});
           this.$router.push('/preprocess');
         }
       })
@@ -127,8 +132,7 @@ export default class Home extends Vue {
   }
 
   private postData(data: Series) {
-    // post data by global attribute of vue.
-    Vue.prototype.spectraData = data;
+    store.state.spectra = data;
   }
 }
 </script>
