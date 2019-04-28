@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-alert :value="alertShow" type="warning">
-      {{alertMessage}}
+      {{ alertMessage }}
     </v-alert>
 
     <v-container>
@@ -22,6 +22,13 @@
       <v-layout row wrap>
         <v-flex xs12 pb-2>
           <h2>最近</h2>
+        </v-flex>
+
+        <v-flex text-xs-center v-if="onLoading">
+          <v-progress-circular
+            indeterminate
+            color="primary">
+          </v-progress-circular>
         </v-flex>
 
         <v-flex
@@ -61,6 +68,7 @@ import Axios, { AxiosResponse } from 'axios'
   }
 })
 export default class Home extends Vue {
+  onLoading: boolean = true;
   numRecentSpectras: number = 0;
   spectras: Array<Series> = [];
   alertMessage: string = '';
@@ -68,6 +76,7 @@ export default class Home extends Vue {
 
   constructor() {
     super();
+    this.onLoading = true;
   }
 
   created() {
@@ -79,8 +88,11 @@ export default class Home extends Vue {
         }
       })
       .catch((error: any) => {
-        this.alertMessage = '无法连接后台服务器';
+        this.alertMessage = `最近数据加载失败: ${error}`;
         this.alertShow = true;
+      })
+      .then(() => {
+        this.onLoading = false;
       });
   }
 
@@ -90,18 +102,23 @@ export default class Home extends Vue {
 
   importSpectraFromFile() {
     const selectedFilePaths = remote.dialog.showOpenDialog({properties: ['openFile']});
-    if (selectedFilePaths === undefined) {
+    if (selectedFilePaths === undefined) { // skip if not select
       return;
-    } else {
-      fs.readFile(selectedFilePaths[0], (err, data) => {
-        if (err) {
-          return console.error(err);
-        } else {
+    } 
+    else {
+      // if select many, we only choose the first one
+      fs.readFile(selectedFilePaths[0], (error, data) => {
+        if (error) {
+          return console.error(error);
+        } 
+        else {
           let points = new Array<Array<number>>();
           data.toString().trim().split('\n').map(line => {
             let s = line.split('\t');
             points.push([parseFloat(s[0]), parseFloat(s[1])]);
           });
+          // we should post data before preprocess page created, since 
+          // this page need data to construct.
           this.postData({name: '10hao-100%-1s-_M', data: points});
           this.$router.push('/preprocess');
         }
