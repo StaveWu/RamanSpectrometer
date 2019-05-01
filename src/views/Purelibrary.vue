@@ -57,6 +57,11 @@
                   <td>{{ props.item.id }}</td>
                   <td class="text-xs-right">{{ props.item.componentName }}</td>
                   <td class="text-xs-right">{{ props.item.formula }}</td>
+                  <td class="text-xs-right">
+                    <span v-if="props.item.state === 'offline'" class="offline">离线</span>
+                    <span v-if="props.item.state === 'online'" class="online">在线</span>
+                    <span v-if="props.item.state === 'busy'" class="busy">忙碌</span>
+                  </td>
                   <td class="justify-center layout px-0">
                     <v-icon
                       small
@@ -102,6 +107,7 @@ interface RowViewObject { // 定义行对象
   id: number;
   componentName: string;
   formula: string;
+  state: string;
   series: Series;
 }
 
@@ -113,23 +119,24 @@ interface RowViewObject { // 定义行对象
 export default class PureLibrary extends Vue {
   dialog: boolean = false;
   editedIndex: number = -1;
-  editedItem: RowViewObject = {id: -1, componentName: '', formula: '', series: {name: '', data: []}};
-  defaultItem: RowViewObject = {id: -1, componentName: '', formula: '', series: {name: '', data: []}};
+  editedItem: RowViewObject = {id: -1, componentName: '', formula: '', state: 'offline', series: {name: '', data: []}};
+  defaultItem: RowViewObject = {id: -1, componentName: '', formula: '', state: 'offline', series: {name: '', data: []}};
 
   expand: boolean = false;
   headers: Array<any> = [
     {text: 'id', value: 'id'},
     {text: '组分名', value: 'componentName'},
     {text: '化学式', value: 'formula'},
+    {text: '模型状态', value: 'state'},
     {text: '操作', value: 'actions', sortable: false}
   ];
   components: Array<RowViewObject> = [
-    {id: 1, componentName: '乙醇', formula: 'C2H5OH', series: {name: '', data: [1, 2, 3, 2]}},
-    {id: 2, componentName: 'DMSO', formula: '', series: {name: '', data: [2, 22, 4, 7]}},
-    {id: 3, componentName: 'DMF', formula: '', series: {name: '', data: [2, 22, 4, 7]}},
-    {id: 4, componentName: '二甲醚', formula: '', series: {name: '', data: [2, 22, 4, 7]}},
-    {id: 5, componentName: '四氯化碳', formula: '', series: {name: '', data: [2, 22, 4, 7]}},
-    {id: 6, componentName: '乙酸', formula: 'CH3COOH', series: {name: '', data: [2, 22, 4, 7]}},
+    {id: 1, componentName: '乙醇', formula: 'C2H5OH', state: 'online', series: {name: '', data: [1, 2, 3, 2]}},
+    {id: 2, componentName: 'DMSO', formula: '(CH3)2SO', state: 'busy', series: {name: '', data: [2, 22, 4, 7]}},
+    {id: 3, componentName: 'DMF', formula: 'C3H7NO', state: 'online', series: {name: '', data: [2, 22, 4, 7]}},
+    {id: 4, componentName: '二甲醚', formula: 'C2H6O', state: 'online', series: {name: '', data: [2, 22, 4, 7]}},
+    {id: 5, componentName: '四氯化碳', formula: 'CCl4', state: 'offline', series: {name: '', data: [2, 22, 4, 7]}},
+    {id: 6, componentName: '乙酸', formula: 'CH3COOH', state: 'offline', series: {name: '', data: [2, 22, 4, 7]}},
   ]
 
   newItem() {
@@ -198,3 +205,16 @@ export default class PureLibrary extends Vue {
 
 }
 </script>
+
+<style>
+.offline {
+  color: #F44336;
+}
+.online {
+  color: #4CAF50;
+}
+.busy {
+  color: #FF9800;
+}
+</style>
+

@@ -26,7 +26,7 @@
             <template slot="expand" slot-scope="props">
               <v-card flat>
                 <v-responsive :aspect-ratio="16/9">
-                  <spectrum :datas="datas"></spectrum>
+                  <spectrum :datas="props.item.series"></spectrum>
                 </v-responsive>
 
                 <v-card-actions>
@@ -48,6 +48,16 @@ import Vue from 'vue'
 import Component from 'vue-class-component';
 import Spectrum from '@/components/Spectrum.vue';
 import {Series} from '@/utils'
+import Axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
+import { Prop } from 'vue-property-decorator';
+
+
+interface ComponentsViewObject {
+  id: number;
+  componentName: string;
+  probability: string;
+  series: Array<Series>;
+}
 
 @Component({
   components: {
@@ -55,9 +65,9 @@ import {Series} from '@/utils'
   }
 })
 export default class DetectSetting extends Vue {
+  @Prop() targetSpectra!: Series;
   selected: Array<string> = ['乙醇', 'DMSO'];
   componentsToDetect: Array<string> = ['甲醇', '乙醇', 'DMF', 'DMSO'];
-  datas: Array<Series> = [{name: '', data: [1, 2, 3, 9, 12]}];
   isDetected: boolean = false;
 
   expand: boolean = false;
@@ -66,15 +76,37 @@ export default class DetectSetting extends Vue {
     {text: '组分名', value: 'componentName'},
     {text: '存在的概率', value: 'probability'}
   ];
-  results: Array<any> = [
-    {id: 1, componentName: '乙醇', probability: '100%'},
-    {id: 2, componentName: 'DMSO', probability: '100%'},
-    {id: 3, componentName: 'DMF', probability: '8%'},
-  ]
+  results: Array<ComponentsViewObject> = [];
 
   detect() {
-    console.log('detect...');
+    this.results.push({
+      id: 1,
+      componentName: '乙醇',
+      probability: '0%',
+      series: []
+    });
+    this.results.push({
+      id: 2,
+      componentName: 'DMSO',
+      probability: '0%',
+      series: []
+    });
     this.isDetected = true;
+    // tricky code
+    Axios.get('http://127.0.0.1:5000/api/v1/trick/1').then((response: AxiosResponse) => {
+      this.results.push({
+        id: 1,
+        componentName: response.data[1].name,
+        probability: '100%',
+        series: [
+          {name: response.data[0].name, data: response.data[0].data},
+          {name: response.data[1].name, data: response.data[1].data}
+        ]
+      })
+      this.isDetected = true;
+    }).catch((error: any) => {
+      console.log(error);
+    })
   }
 }
 

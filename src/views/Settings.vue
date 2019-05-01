@@ -1,15 +1,47 @@
 <template>
   <div>
     <v-container fluid>
-      <v-layout wrap align-center>
+      <v-layout wrap>
         <v-flex xs12>
-          <h3>主题设置</h3>
-        </v-flex>
-        <v-flex xs12 pb-5>
-          <v-switch v-model="dark" color="primary" label="白-黑" hint="切换到其他页后更新" persistent-hint></v-switch>
+          <h3>光谱波段选择</h3>
         </v-flex>
 
-        <v-flex xs12>
+        <v-flex
+          shrink
+          style="width: 60px"
+        >
+          <v-text-field
+            v-model="wavenumbersRange[0]"
+            class="mt-0"
+            hide-details
+            single-line
+            type="number"
+          ></v-text-field>
+        </v-flex>
+
+        <v-flex px-3>
+          <v-range-slider
+            v-model="wavenumbersRange"
+            :max="3000"
+            :min="0"
+            :step="1"
+          ></v-range-slider>
+        </v-flex>
+
+        <v-flex
+          shrink
+          style="width: 60px"
+        >
+          <v-text-field
+            v-model="wavenumbersRange[1]"
+            class="mt-0"
+            hide-details
+            single-line
+            type="number"
+          ></v-text-field>
+        </v-flex>
+
+        <v-flex xs12 pt-4>
           <h3>批量识别预处理Pipeline</h3>
         </v-flex>
         <v-flex xs12 pb-3>
@@ -24,7 +56,7 @@
             @input="onInput"
           ></v-text-field>
         </v-flex>
-        <v-flex xs12>
+        <v-flex xs12 pb-5>
           <v-stepper v-model="e1">
             <v-stepper-header>
               <template v-for="n in steps">
@@ -78,7 +110,14 @@
           </v-stepper>
         </v-flex>
 
-        <v-flex xs12 pt-5>
+        <v-flex xs12>
+          <h3>主题设置</h3>
+        </v-flex>
+        <v-flex xs12 pb-5>
+          <v-switch v-model="dark" color="primary" label="白-黑" hint="切换到其他页后更新" persistent-hint></v-switch>
+        </v-flex>
+
+        <v-flex xs12>
           <h3>关于拉曼光谱识别软件</h3>
         </v-flex>
         <v-flex xs12>
@@ -98,9 +137,10 @@ import airPLS from '@/components/AIRPLS.vue'
 enum Alogrithm {
   SG = 'S-G滤波',
   WAVELET = '小波变换',
-  DAE = '去噪自编码器',
+  DAE = '卷积去噪自编码器',
   AIRPLS = 'airPLS',
-  POLYFIT = '多项式拟合'
+  POLYFIT = '多项式拟合',
+  SVD_MAD = '奇异值分解-中位数绝对偏差'
 }
 
 @Component({
@@ -111,6 +151,7 @@ enum Alogrithm {
 })
 export default class Settings extends Vue {
   dark: boolean = false;
+  wavenumbersRange: Array<number> = [0, 3000];
   e1: number = 1;
   steps: number = 2;
 
@@ -120,7 +161,8 @@ export default class Settings extends Vue {
     Alogrithm.WAVELET, 
     Alogrithm.DAE,
     Alogrithm.AIRPLS,
-    Alogrithm.POLYFIT
+    Alogrithm.POLYFIT,
+    Alogrithm.SVD_MAD
   ]; 
 
   @Watch('dark')

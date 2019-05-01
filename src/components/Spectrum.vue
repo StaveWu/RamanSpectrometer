@@ -48,7 +48,7 @@ export default class Spectrum extends Vue {
       },
       xAxis: {
         title: {
-          text: 'Wavenumbers'
+          text: 'Wavenumbers/cm-1'
         },
         gridLineWidth: 1
       },
@@ -73,17 +73,20 @@ export default class Spectrum extends Vue {
 
     // 这里不能清掉再添加，因为对性能有影响，画面会有残留；
     // 猜测与series的大小被重新分配有关，内部定义series有一定的开销
-    let seriesLength = this.chart.series.length;
-    for (let i = 0; i < this.datas.length; i++) {
-      if (i < seriesLength) {
-        this.chart.series[i].name = this.datas[i].name;
-        this.chart.series[i].setData(this.datas[i].data);
-      } else {
-        this.chart.addSeries(<Highcharts.SeriesLineOptions>{
-          data: this.datas[i].data,
-          name: this.datas[i].name,
-        });
+    let diff = this.chart.series.length - this.datas.length;
+    if (diff > 0) {
+      for (let i = this.chart.series.length; i > diff; i--) {
+        this.chart.series[i-1].remove(true);
       }
+    } else if (diff < 0) {
+      for (let i = this.chart.series.length; i < this.datas.length; i++) {
+        this.chart.addSeries(<Highcharts.SeriesLineOptions>{});
+      }
+    }
+    // update
+    for (let i = 0; i < this.datas.length; i++) {
+      this.chart.series[i].name = this.datas[i].name;
+      this.chart.series[i].setData(this.datas[i].data);
     }
   }
 

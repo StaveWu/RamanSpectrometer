@@ -1,17 +1,21 @@
 <template>
   <div>
     <v-tabs centered>
-      <v-tab :key="1">光谱去噪</v-tab>
-      <v-tab :key="2">基线校正</v-tab>
-      <v-tab :key="3">组分识别</v-tab>
+      <v-tab :key="1">常规</v-tab>
+      <v-tab :key="2">光谱去噪</v-tab>
+      <v-tab :key="3">基线校正</v-tab>
+      <v-tab :key="4">组分识别</v-tab>
       <v-tab-item :key="1">
-        <denoise-setting/>
+        <conventional-setting></conventional-setting>
       </v-tab-item>
       <v-tab-item :key="2">
-        <debackground-setting></debackground-setting>
+        <denoise-setting/>
       </v-tab-item>
       <v-tab-item :key="3">
-        <detect-setting></detect-setting>
+        <debackground-setting></debackground-setting>
+      </v-tab-item>
+      <v-tab-item :key="4">
+        <detect-setting :targetSpectra="datas[datas.length - 1]"></detect-setting>
       </v-tab-item>
     </v-tabs>
 
@@ -39,10 +43,12 @@ import Vue from 'vue'
 import DenoiseSetting from '@/components/DenoiseSetting.vue';
 import DebackgroundSetting from '@/components/DebackgroundSetting.vue';
 import DetectSetting from '@/components/DetectSetting.vue';
-
+import ConventionalSetting from '@/components/ConventionalSetting.vue';
 import Spectrum from '@/components/Spectrum.vue';
+
 import Component from 'vue-class-component';
 import {Series} from '@/utils'
+import store from '../store'
 
 @Component({
   components: {
@@ -50,6 +56,7 @@ import {Series} from '@/utils'
     DebackgroundSetting,
     DetectSetting,
     Spectrum,
+    ConventionalSetting
   }
 })
 export default class PreprocessView extends Vue {
@@ -57,18 +64,29 @@ export default class PreprocessView extends Vue {
 
   constructor() {
     super();
-    
-    // the first time spectrum can't catch this event, and then spectrum is lost.
+
     this.datas.push(this.getSpectraData());
   }
 
+  created() {
+    this.$root.$on('preprocessReceived', (name: string, data: Array<any>) => {
+      this.datas.push({name: name, data: data});
+    });
+    this.$root.$on('preprocessConfirmed', () => {
+      if (this.datas.length == 0) {
+        return;
+      }
+      this.datas.splice(0, 1);
+    });
+  }
+
+  beforeDestroy() {
+    this.$root.$off('preprocessReceived');
+    this.$root.$off('preprocessConfirmed');
+  }
+
   private getSpectraData(): Series {
-    // init data from global attribute.
-    let res = Vue.prototype.spectraData;
-    if (res === undefined) {
-      res = {name: '', data: []};
-    }
-    return res;
+    return store.state.spectra;
   }
 }
 </script>

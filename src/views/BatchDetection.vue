@@ -135,10 +135,9 @@ export default class BatchDetection extends Vue {
   showFeedbackPart = false;
   
   targetItems: Array<TargetListObject> = [
-    {file: '1hao-1s', folder: 'E:/04文档/硕士毕业设计/数据/烟草/样品'},
-    {file: '2hao-1s', folder: 'E:/04文档/硕士毕业设计/数据/烟草/样品'},
-    {file: '3hao-1s', folder: 'E:/04文档/硕士毕业设计/数据/烟草/样品'},
-    {file: '4hao-1s', folder: 'E:/04文档/硕士毕业设计/数据/烟草/样品'},
+    {file: '1hao-100%-1s-_M', folder: 'E:/拉曼光谱识别/数据/烟草/样品'},
+    {file: '2hao-100%-1s-_M', folder: 'E:/拉曼光谱识别/数据/烟草/样品'},
+    {file: '3hao-100%-1s-_M', folder: 'E:/拉曼光谱识别/数据/烟草/样品'},
   ]
 
   headers: Array<any> = [];
@@ -157,10 +156,9 @@ export default class BatchDetection extends Vue {
     
     // 完善行对象
     this.results = [
-      {file:'1hao-1s', probabilities: ['100%', '95%', '93%', '99%']},
-      {file:'2hao-1s', probabilities: ['100%', '95%', '93%', '99%']},
-      {file:'3hao-1s', probabilities: ['100%', '95%', '93%', '99%']},
-      {file:'4hao-1s', probabilities: ['100%', '95%', '93%', '99%']},
+      {file:'1hao-100%-1s-_M', probabilities: ['100%', '0%', '0%', '0%']},
+      {file:'2hao-100%-1s-_M', probabilities: ['100%', '100%', '0%', '0%']},
+      {file:'3hao-100%-1s-_M', probabilities: ['0%', '0%', '100%', '0%']},
     ]
     this.isDetected = true;
     this.showFeedbackPart = false;
