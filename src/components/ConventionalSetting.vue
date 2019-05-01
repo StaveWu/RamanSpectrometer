@@ -34,7 +34,7 @@ export default class ConventionalSetting extends Vue {
   ];
 
   preprocess() {
-    Axios.get('http://127.0.0.1:5000/api/v1/conventionals/minmax-scale')
+    Axios.post('http://127.0.0.1:5000/api/v1/conventionals/minmax-scale')
     .then((response: AxiosResponse) => {
       this.$root.$emit('preprocessReceived', response.data.name, response.data.data);
     })

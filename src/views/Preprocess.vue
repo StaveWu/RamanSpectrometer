@@ -44,8 +44,8 @@ import DenoiseSetting from '@/components/DenoiseSetting.vue';
 import DebackgroundSetting from '@/components/DebackgroundSetting.vue';
 import DetectSetting from '@/components/DetectSetting.vue';
 import ConventionalSetting from '@/components/ConventionalSetting.vue';
-
 import Spectrum from '@/components/Spectrum.vue';
+
 import Component from 'vue-class-component';
 import {Series} from '@/utils'
 import store from '../store'
@@ -86,12 +86,6 @@ export default class PreprocessView extends Vue {
   }
 
   private getSpectraData(): Series {
-    // init data from global attribute.
-    // let res = Vue.prototype.spectraData;
-    // if (res === undefined) {
-    //   res = {name: '', data: []};
-    // }
-    // return res;
     return store.state.spectra;
   }
 }
