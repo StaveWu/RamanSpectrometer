@@ -132,8 +132,8 @@ export default class Home extends Vue {
   }
 
   private postData(data: Series) {
-    store.state.spectraDeque.length = 0;
-    store.state.spectraDeque.push(data);
+    store.commit('clear');
+    store.commit('enqueue', data);
   }
 }
 </script>
