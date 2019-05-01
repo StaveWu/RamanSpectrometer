@@ -14,12 +14,6 @@
           <air-pls v-if="isAIRPLS()"></air-pls>
         </v-card>
       </v-flex>
-
-      <v-flex xs12 md12 lg12 text-xs-right pt-3>
-        <v-btn color="primary" @click="debackground()">应用</v-btn>
-        <v-btn color="primary" @click="confirm()">确定</v-btn>
-        <v-btn flat>撤销</v-btn>
-      </v-flex>
     </v-layout>
   </v-container>
 </template>

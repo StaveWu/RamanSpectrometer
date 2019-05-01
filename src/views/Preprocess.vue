@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <v-toolbar color="white" tabs flat>
       <v-btn icon>
         <v-icon>undo</v-icon>
@@ -16,7 +15,6 @@
           </v-tab>
         </v-tabs>
       </template>
-
     </v-toolbar>
 
     <v-tabs-items v-model="active">
@@ -33,6 +31,11 @@
         <detect-setting :targetSpectra="datas[datas.length - 1]"></detect-setting>
       </v-tab-item>
     </v-tabs-items>
+
+    <div v-if="active < 3" class="text-xs-right pr-3">
+      <v-btn color="primary" @click="doPreprocess()">应用</v-btn>
+      <v-btn color="primary" @click="confirm()">确定</v-btn>
+    </div>
 
     <v-container fluid>
       <v-layout wrap>

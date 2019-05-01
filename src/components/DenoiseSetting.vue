@@ -14,12 +14,6 @@
           <sg-filter v-if="isSG()"></sg-filter>
         </v-card>
       </v-flex>
-
-      <v-flex text-xs-right pt-3>
-        <v-btn color="primary" @click="denoise()">应用</v-btn>
-        <v-btn color="primary" @click="confirm()">确定</v-btn>
-        <v-btn flat>撤销</v-btn>
-      </v-flex>
     </v-layout>
   </v-container>
 </template>
