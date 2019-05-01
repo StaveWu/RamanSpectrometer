@@ -43,13 +43,13 @@ export default class ConventionalSetting extends Vue {
     });
   }
   private getUri() {
-    let res = 'http://127.0.0.1:5000/api/v1/conventionals/'
+    let res = 'http://127.0.0.1:5000/api/v1/conventionals/';
     if (this.selected === ConventionalActions.MINMAX_SCALE) {
       res += 'minmax-scale';
     } else if (this.selected === ConventionalActions.SCALE) {
       res += 'scale';
     } else {
-      throw new Error('can not reach here!')
+      throw new Error('can not reach here!');
     }
     return res;
   }

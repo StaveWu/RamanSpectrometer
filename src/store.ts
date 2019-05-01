@@ -11,7 +11,7 @@ export default new Vuex.Store({
   },
   mutations: {
     enqueue(state, element: Series) {
-      state.spectraDeque.push(element)
+      state.spectraDeque.push(element);
     },
     dequeue(state) {
       let poped = state.spectraDeque.pop();
@@ -34,7 +34,7 @@ export default new Vuex.Store({
   },
   getters: {
     targetSpectra: state => {
-      return state.spectraDeque[state.spectraDeque.length - 1]
-    }
+      return state.spectraDeque[state.spectraDeque.length - 1];
+    },
   }
 });

@@ -65,7 +65,6 @@ interface ComponentsViewObject {
   }
 })
 export default class DetectSetting extends Vue {
-  @Prop() targetSpectra!: Series;
   selected: Array<string> = ['乙醇', 'DMSO'];
   componentsToDetect: Array<string> = ['甲醇', '乙醇', 'DMF', 'DMSO'];
   isDetected: boolean = false;

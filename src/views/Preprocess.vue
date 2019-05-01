@@ -28,14 +28,9 @@
         <debackground-setting></debackground-setting>
       </v-tab-item>
       <v-tab-item :key="4">
-        <detect-setting :targetSpectra="datas[datas.length - 1]"></detect-setting>
+        <detect-setting></detect-setting>
       </v-tab-item>
     </v-tabs-items>
-
-    <div v-if="active < 3" class="text-xs-right pr-3">
-      <v-btn color="primary" @click="doPreprocess()">应用</v-btn>
-      <v-btn color="primary" @click="confirm()">确定</v-btn>
-    </div>
 
     <v-container fluid>
       <v-layout wrap>
@@ -46,7 +41,7 @@
         <v-flex xs12>
           <v-card>
             <v-responsive :aspect-ratio="16/9">
-              <spectrum :datas="datas"></spectrum>
+              <spectrum :datas="spectraDeque"></spectrum>
             </v-responsive>
           </v-card>
         </v-flex>
@@ -57,16 +52,16 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import Vue from 'vue';
 import DenoiseSetting from '@/components/DenoiseSetting.vue';
 import DebackgroundSetting from '@/components/DebackgroundSetting.vue';
 import DetectSetting from '@/components/DetectSetting.vue';
 import ConventionalSetting from '@/components/ConventionalSetting.vue';
 import Spectrum from '@/components/Spectrum.vue';
 
-import Component from 'vue-class-component';
-import {Series} from '@/utils'
-import store from '../store'
+import { Component, Prop, Watch } from "vue-property-decorator";
+import {Series} from '@/utils';
+import store from '@/store';
 
 @Component({
   components: {
@@ -78,36 +73,11 @@ import store from '../store'
   }
 })
 export default class PreprocessView extends Vue {
-  datas: Array<Series> = [];
   active: number = 0;
-  tabNames: Array<string> = ['常规处理', '光谱去噪', '基线校正', '组分识别']
+  readonly tabNames: Array<string> = ['常规处理', '光谱去噪', '基线校正', '组分识别'];
 
-  constructor() {
-    super();
-
-    this.datas.push(this.getSpectraData());
-  }
-
-  created() {
-    this.$root.$on('preprocessReceived', (name: string, data: Array<any>) => {
-      this.datas.push({name: name, data: data});
-    });
-    this.$root.$on('preprocessConfirmed', () => {
-      if (this.datas.length == 0) {
-        return;
-      }
-      this.datas.splice(0, 1);
-    });
-  }
-
-  beforeDestroy() {
-    this.$root.$off('preprocessReceived');
-    this.$root.$off('preprocessConfirmed');
-  }
-
-  private getSpectraData(): Series {
-    return store.state.spectraDeque.length > 0 ? 
-      store.getters.targetSpectra : new Series('', []);
+  get spectraDeque() {
+    return store.state.spectraDeque;
   }
 }
 </script>

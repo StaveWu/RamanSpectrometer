@@ -122,7 +122,7 @@ export default class Home extends Vue {
             let s = line.split('\t');
             points.push([parseFloat(s[0]), parseFloat(s[1])]);
           });
-          // we should post data before preprocess page created, since 
+          // data should be posted before preprocess page created, since 
           // this page need data to construct.
           this.postData({name: name, data: points});
           this.$router.push('/preprocess');
