@@ -1,12 +1,27 @@
 <template>
   <div>
-    <v-tabs centered>
-      <v-tab :key="1">常规</v-tab>
-      <v-tab :key="2">光谱去噪</v-tab>
-      <v-tab :key="3">基线校正</v-tab>
-      <v-tab :key="4">组分识别</v-tab>
+
+    <v-toolbar color="white" tabs flat>
+      <v-btn icon>
+        <v-icon>undo</v-icon>
+      </v-btn>
+
+      <template v-slot:extension>
+        <v-tabs
+          centered
+          v-model="active"
+        >
+          <v-tab v-for="i in tabNames.length" :key="i-1">
+            {{ tabNames[i - 1] }}
+          </v-tab>
+        </v-tabs>
+      </template>
+
+    </v-toolbar>
+
+    <v-tabs-items v-model="active">
       <v-tab-item :key="1">
-        <conventional-setting></conventional-setting>
+        <conventional-setting/>
       </v-tab-item>
       <v-tab-item :key="2">
         <denoise-setting/>
@@ -17,7 +32,7 @@
       <v-tab-item :key="4">
         <detect-setting :targetSpectra="datas[datas.length - 1]"></detect-setting>
       </v-tab-item>
-    </v-tabs>
+    </v-tabs-items>
 
     <v-container fluid>
       <v-layout wrap>
@@ -61,6 +76,8 @@ import store from '../store'
 })
 export default class PreprocessView extends Vue {
   datas: Array<Series> = [];
+  active: number = 0;
+  tabNames: Array<string> = ['常规处理', '光谱去噪', '基线校正', '组分识别']
 
   constructor() {
     super();
