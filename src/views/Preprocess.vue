@@ -103,7 +103,8 @@ export default class PreprocessView extends Vue {
   }
 
   private getSpectraData(): Series {
-    return store.state.spectra;
+    return store.state.spectraDeque.length > 0 ? 
+      store.getters.targetSpectra : new Series('', []);
   }
 }
 </script>
