@@ -14,6 +14,11 @@
           <sg-filter v-if="isSG()"></sg-filter>
         </v-card>
       </v-flex>
+
+      <v-flex text-xs-right pt-3>
+        <v-btn color="primary" @click="denoise()">应用</v-btn>
+        <v-btn color="primary" @click="confirm()">确定</v-btn>
+      </v-flex>
     </v-layout>
   </v-container>
 </template>
@@ -22,7 +27,9 @@
 import Vue from 'vue'
 import SGFilter from '@/components/SGFilter.vue'
 import Component from 'vue-class-component';
-import Axios, { AxiosResponse } from 'axios'
+import Axios, { AxiosResponse } from 'axios';
+import store from '@/store';
+import { Series } from '@/utils';
 
 enum DenoiseAlogrithm {
   SG = 'S-G滤波',
@@ -47,14 +54,32 @@ export default class DenoiseSetting extends Vue {
     return this.selected === DenoiseAlogrithm.SG;
   }
   denoise(): void {
-    Axios.get('http://127.0.0.1:5000/api/v1/spectras/1/denoises/dae')
-      .then((response: AxiosResponse) => {
-        this.$root.$emit('preprocessReceived', response.data.name, response.data.data);
-      })
-      .catch((error: any) => {
-        console.log(error);
-      });
+    Axios.post(this.getUri(), store.getters.targetSpectra)
+    .then((response: AxiosResponse) => {
+      store.commit('enqueue', new Series(response.data.name, response.data.data));
+    })
+    .catch((error: any) => {
+      console.log(error);
+    });
   }
+  private getUri() {
+    let res = 'http://127.0.0.1:5000/api/v1/denoises/';
+    switch (this.selected) {
+      case DenoiseAlogrithm.SG: 
+        res += 'sgfilter';
+        break;
+      case DenoiseAlogrithm.WAVELET:
+        res += 'wavelet';
+        break;
+      case DenoiseAlogrithm.DAE:
+        res += 'dae';
+        break;
+      default:
+        throw new Error('can not reach here!');
+    }
+    return res;
+  }
+
   confirm() {
     this.$root.$emit('preprocessConfirmed');
   }

@@ -14,6 +14,11 @@
           <air-pls v-if="isAIRPLS()"></air-pls>
         </v-card>
       </v-flex>
+
+      <v-flex text-xs-right pt-3>
+        <v-btn color="primary" @click="debackground()">应用</v-btn>
+        <v-btn color="primary" @click="confirm()">确定</v-btn>
+      </v-flex>
     </v-layout>
   </v-container>
 </template>
@@ -45,14 +50,23 @@ export default class DebackgroundSetting extends Vue {
   isAIRPLS(): boolean {
     return this.selected === DebackgroundAlogrithm.AIRPLS;
   }
+
   debackground(): void {
-    Axios.get('http://127.0.0.1:5000/api/v1/spectras/1/debackgrounds/airpls?lambda=50')
-      .then((response: AxiosResponse) => {
-        this.$root.$emit('preprocessReceived', response.data.name, response.data.data);
-      })
-      .catch((error: any) => {
-        console.log(error);
-      });
+    this.$root.$emit('preprocess', this.getUri());
+  }
+  private getUri() {
+    let res = 'http://127.0.0.1:5000/api/v1/debackgrounds/';
+    switch (this.selected) {
+      case DebackgroundAlogrithm.AIRPLS: 
+        res += 'airpls';
+        break;
+      case DebackgroundAlogrithm.POLYFIT:
+        res += 'polyfit';
+        break;
+      default:
+        throw new Error('can not reach here!');
+    }
+    return res;
   }
 
   confirm() {

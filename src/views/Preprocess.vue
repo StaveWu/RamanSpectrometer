@@ -62,6 +62,7 @@ import Spectrum from '@/components/Spectrum.vue';
 import { Component, Prop, Watch } from "vue-property-decorator";
 import {Series} from '@/utils';
 import store from '@/store';
+import Axios, {AxiosResponse} from 'axios';
 
 @Component({
   components: {
@@ -78,6 +79,24 @@ export default class PreprocessView extends Vue {
 
   get spectraDeque() {
     return store.state.spectraDeque;
+  }
+
+  constructor() {
+    super();
+    this.$root.$on('preprocess', (uri: string) => {
+      Axios.post(uri, store.getters.targetSpectra)
+      .then((response: AxiosResponse) => {
+        store.commit('enqueue', new Series(response.data.name, response.data.data));
+      })
+      .catch((error: any) => {
+        console.log(error);
+      });
+    });
+    this.$root.$on('preprocessConfirmed', () => {
+      if (store.state.spectraDeque.length > 1) {
+        store.commit('dequeue');
+      }
+    });
   }
 }
 </script>
