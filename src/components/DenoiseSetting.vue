@@ -30,6 +30,9 @@ import Component from 'vue-class-component';
 import Axios, { AxiosResponse } from 'axios';
 import store from '@/store';
 import { Series } from '@/utils';
+import RepositoryFactory from '@/repositories/RepositoryFactory';
+
+const DenoiseRepository = RepositoryFactory.get('denoise');
 
 enum DenoiseAlogrithm {
   SG = 'S-G滤波',
@@ -53,14 +56,9 @@ export default class DenoiseSetting extends Vue {
   isSG(): boolean {
     return this.selected === DenoiseAlogrithm.SG;
   }
+  
   denoise(): void {
-    Axios.post(this.getUri(), store.getters.targetSpectra)
-    .then((response: AxiosResponse) => {
-      store.commit('enqueue', new Series(response.data.name, response.data.data));
-    })
-    .catch((error: any) => {
-      console.log(error);
-    });
+    this.$root.$emit('preprocess', this.getUri());
   }
   private getUri() {
     let res = 'http://127.0.0.1:5000/api/v1/denoises/';
@@ -85,15 +83,5 @@ export default class DenoiseSetting extends Vue {
   }
 }
 </script>
-
-<style>
-.div-left {
-  float: left;
-}
-
-.div-right {
-  float: right;
-}
-</style>
 
 
