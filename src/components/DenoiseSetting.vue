@@ -5,14 +5,8 @@
         <v-combobox v-model="selected" :items="items" chips label="请选择去噪算法"></v-combobox>
       </v-flex>
 
-      <v-flex pb-2 xs12 v-if="isSG()">
-        <h3>参数设置</h3>
-      </v-flex>
-      
-      <v-flex>
-        <v-card>
-          <sg-filter v-if="isSG()"></sg-filter>
-        </v-card>
+      <v-flex xs12>
+        <sg-filter v-if="isSG()" @paramUpdated="updateParams($event)"></sg-filter>
       </v-flex>
 
       <v-flex text-xs-right pt-3>
@@ -27,7 +21,7 @@
 import Vue from 'vue'
 import SGFilter from '@/components/SGFilter.vue'
 import Component from 'vue-class-component';
-import Axios, { AxiosResponse } from 'axios';
+import { AxiosResponse, AxiosError } from 'axios';
 import store from '@/store';
 import { Series } from '@/utils';
 import RepositoryFactory from '@/repositories/RepositoryFactory';
@@ -52,34 +46,30 @@ export default class DenoiseSetting extends Vue {
     DenoiseAlogrithm.WAVELET, 
     DenoiseAlogrithm.DAE
   ];
+  parameters?: any;
   
   isSG(): boolean {
     return this.selected === DenoiseAlogrithm.SG;
   }
   
   denoise(): void {
-    this.$root.$emit('preprocess', this.getUri());
-  }
-  private getUri() {
-    let res = 'http://127.0.0.1:5000/api/v1/denoises/';
-    switch (this.selected) {
-      case DenoiseAlogrithm.SG: 
-        res += 'sgfilter';
-        break;
-      case DenoiseAlogrithm.WAVELET:
-        res += 'wavelet';
-        break;
-      case DenoiseAlogrithm.DAE:
-        res += 'dae';
-        break;
-      default:
-        throw new Error('can not reach here!');
-    }
-    return res;
+    DenoiseRepository.get('sgfilter', this.parameters)
+    .then((response: AxiosResponse) => {
+      store.commit('enqueue', new Series(response.data.name, response.data.data));
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
   }
 
   confirm() {
-    this.$root.$emit('preprocessConfirmed');
+    if (store.state.spectraDeque.length > 1) {
+      store.commit('dequeue');
+    }
+  }
+
+  updateParams(event: any) {
+    this.parameters = event;
   }
 }
 </script>

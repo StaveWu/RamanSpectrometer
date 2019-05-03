@@ -4,15 +4,9 @@
       <v-flex text-xs-left md12 xs12 lg12>
         <v-combobox v-model="selected" :items="items" chips label="请选择基线校正算法"></v-combobox>
       </v-flex>
-
-      <v-flex pb-2 xs12 v-if="isAIRPLS()">
-        <h3>参数设置</h3>
-      </v-flex>
       
       <v-flex text-xs-left md12 xs12 sm12 lg12>
-        <v-card>
-          <air-pls v-if="isAIRPLS()"></air-pls>
-        </v-card>
+        <air-pls v-if="isAIRPLS()"></air-pls>
       </v-flex>
 
       <v-flex text-xs-right pt-3>

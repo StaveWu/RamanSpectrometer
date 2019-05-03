@@ -87,10 +87,6 @@
                     <v-flex text-xs-left xs12>
                       <v-combobox v-model="selected" :items="items" chips label="请选择预处理算法"></v-combobox>
                     </v-flex>
-
-                    <v-flex xs12>
-                      <h3>参数设置</h3>
-                    </v-flex>
                     
                     <v-flex text-xs-left xs12>
                       <air-pls v-if="isAIRPLS()"></air-pls>
