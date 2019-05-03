@@ -25,14 +25,9 @@ import { AxiosResponse, AxiosError } from 'axios';
 import store from '@/store';
 import { Series } from '@/utils';
 import RepositoryFactory from '@/repositories/RepositoryFactory';
+import { Algorithm, SG, DAE, WAVELET } from '../common/Algorithm'
 
 const DenoiseRepository = RepositoryFactory.get('denoise');
-
-enum DenoiseAlogrithm {
-  SG = 'S-G滤波',
-  WAVELET = '小波变换',
-  DAE = '卷积去噪自编码器'
-}
 
 @Component({
   components: {
@@ -40,20 +35,20 @@ enum DenoiseAlogrithm {
   }
 })
 export default class DenoiseSetting extends Vue {
-  selected: DenoiseAlogrithm = DenoiseAlogrithm.SG;
-  items: Array<DenoiseAlogrithm> = [
-    DenoiseAlogrithm.SG, 
-    DenoiseAlogrithm.WAVELET, 
-    DenoiseAlogrithm.DAE
+  selected: Algorithm = SG;
+  items: Array<Algorithm> = [
+    SG, 
+    WAVELET, 
+    DAE
   ];
   parameters?: any;
   
-  isSG(): boolean {
-    return this.selected === DenoiseAlogrithm.SG;
+  isSG() {
+    return this.selected === SG;
   }
   
-  denoise(): void {
-    DenoiseRepository.get('sgfilter', this.parameters)
+  denoise() {
+    DenoiseRepository.get(this.selected.value, this.parameters)
     .then((response: AxiosResponse) => {
       store.commit('enqueue', new Series(response.data.name, response.data.data));
     })

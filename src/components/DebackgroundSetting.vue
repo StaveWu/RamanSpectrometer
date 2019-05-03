@@ -6,7 +6,7 @@
       </v-flex>
       
       <v-flex text-xs-left md12 xs12 sm12 lg12>
-        <air-pls v-if="isAIRPLS()"></air-pls>
+        <air-pls v-if="isAIRPLS()" @paramUpdated="updateParams($event)"></air-pls>
       </v-flex>
 
       <v-flex text-xs-right pt-3>
@@ -21,13 +21,13 @@
 import Vue from 'vue'
 import Component from 'vue-class-component';
 import airPLS from '@/components/AIRPLS.vue'
-import Axios, { AxiosResponse } from 'axios'
+import { AxiosResponse, AxiosError } from 'axios';
+import { Algorithm, AIRPLS, POLYFIT } from '../common/Algorithm';
+import RepositoryFactory from '../repositories/RepositoryFactory';
+import store from '@/store';
+import { Series } from '@/utils';
 
-
-enum DebackgroundAlogrithm {
-  AIRPLS = 'airPLS',
-  POLYFIT = '多项式拟合'
-}
+const DebackgroundRepository = RepositoryFactory.get('debackground');
 
 @Component({
   components: {
@@ -35,36 +35,35 @@ enum DebackgroundAlogrithm {
   }
 })
 export default class DebackgroundSetting extends Vue {
-  selected: DebackgroundAlogrithm = DebackgroundAlogrithm.AIRPLS;
-  items: Array<DebackgroundAlogrithm> = [
-    DebackgroundAlogrithm.AIRPLS,
-    DebackgroundAlogrithm.POLYFIT
+  selected: Algorithm = AIRPLS;
+  items: Array<Algorithm> = [
+    AIRPLS,
+    POLYFIT
   ];
+  parameters?: any;
   
-  isAIRPLS(): boolean {
-    return this.selected === DebackgroundAlogrithm.AIRPLS;
+  isAIRPLS() {
+    return this.selected === AIRPLS;
   }
 
-  debackground(): void {
-    this.$root.$emit('preprocess', this.getUri());
-  }
-  private getUri() {
-    let res = 'http://127.0.0.1:5000/api/v1/debackgrounds/';
-    switch (this.selected) {
-      case DebackgroundAlogrithm.AIRPLS: 
-        res += 'airpls';
-        break;
-      case DebackgroundAlogrithm.POLYFIT:
-        res += 'polyfit';
-        break;
-      default:
-        throw new Error('can not reach here!');
-    }
-    return res;
+  debackground() {
+    DebackgroundRepository.get(this.selected.value, this.parameters)
+    .then((response: AxiosResponse) => {
+      store.commit('enqueue', new Series(response.data.name, response.data.data));
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
   }
 
   confirm() {
-    this.$root.$emit('preprocessConfirmed');
+    if (store.state.spectraDeque.length > 1) {
+      store.commit('dequeue');
+    }
+  }
+
+  updateParams(event: any) {
+    this.parameters = event;
   }
 }
 </script>

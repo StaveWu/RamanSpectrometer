@@ -1,5 +1,6 @@
 import DenoiseRepository from '../repositories/DenoiseRepository'
 import DebackgroundRepository from '../repositories/DebackgroundRepository'
+import ConventionalRepository from '../repositories/ConventionalRepository'
 
 interface Indexable {
   [index: string]: any;
@@ -7,7 +8,8 @@ interface Indexable {
 
 const repositories: Indexable = {
   denoise: DenoiseRepository,
-  debackground: DebackgroundRepository
+  debackground: DebackgroundRepository,
+  conventional: ConventionalRepository
 }
 
 export default {

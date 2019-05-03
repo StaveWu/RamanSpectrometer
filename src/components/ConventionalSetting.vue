@@ -16,40 +16,37 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component';
-import Axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
+import { AxiosResponse, AxiosError } from 'axios'
 import store from '../store'
-import { Series } from '../utils'
+import { Series } from '../utils';
+import { Algorithm, MINMAX_SCALE, SCALE } from '../common/Algorithm'
+import RepositoryFactory from '@/repositories/RepositoryFactory';
 
-enum ConventionalActions {
-  MINMAX_SCALE = '归一化',
-  SCALE = '标准化'
-}
+const ConventionalRepository = RepositoryFactory.get('conventional');
 
 @Component
 export default class ConventionalSetting extends Vue {
-  selected: ConventionalActions = ConventionalActions.MINMAX_SCALE;
-  items: Array<ConventionalActions> = [
-    ConventionalActions.MINMAX_SCALE,
-    ConventionalActions.SCALE
+  selected: Algorithm = MINMAX_SCALE;
+  items: Array<Algorithm> = [
+    MINMAX_SCALE,
+    SCALE
   ];
+  parameters?: any;
 
   preprocess() {
-    this.$root.$emit('preprocess', this.getUri());
-  }
-  private getUri() {
-    let res = 'http://127.0.0.1:5000/api/v1/conventionals/';
-    if (this.selected === ConventionalActions.MINMAX_SCALE) {
-      res += 'minmax-scale';
-    } else if (this.selected === ConventionalActions.SCALE) {
-      res += 'scale';
-    } else {
-      throw new Error('can not reach here!');
-    }
-    return res;
+    ConventionalRepository.get(this.selected.value, this.parameters)
+    .then((response: AxiosResponse) => {
+      store.commit('enqueue', new Series(response.data.name, response.data.data));
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
   }
 
   confirm() {
-    this.$root.$emit('preprocessConfirmed');
+    if (store.state.spectraDeque.length > 1) {
+      store.commit('dequeue');
+    }
   }
 }
 </script>
