@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-layout wrap>
-      <v-flex text-xs-left md12 xs12 lg12>
+      <v-flex md12 xs12 lg12>
         <v-combobox v-model="selected" :items="componentsToDetect" chips multiple label="请选择要识别的组分"></v-combobox>
       </v-flex>
 
@@ -15,11 +15,10 @@
 
       <v-flex v-if="isDetected">
         <v-card>
-          <v-data-table :headers="headers" :items="results" expand="expand" item-key="id">
+          <v-data-table :headers="headers" :items="results" expand="expand" item-key="componentName">
             <template slot="items" slot-scope="props">
               <tr @click="props.expanded = !props.expanded">
-                <td>{{ props.item.id }}</td>
-                <td class="text-xs-right">{{ props.item.componentName }}</td>
+                <td>{{ props.item.componentName }}</td>
                 <td class="text-xs-right">{{ props.item.probability }}</td>
               </tr>
             </template>
@@ -48,15 +47,23 @@ import Vue from 'vue'
 import Component from 'vue-class-component';
 import Spectrum from '@/components/Spectrum.vue';
 import {Series} from '@/utils'
-import Axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
+import { AxiosResponse, AxiosError } from 'axios'
 import { Prop } from 'vue-property-decorator';
+import RepositoryFactory from '../repositories/RepositoryFactory';
 
+const ComponentRepository = RepositoryFactory.get('component');
+const DetectRepository = RepositoryFactory.get('detect');
 
 interface ComponentsViewObject {
-  id: number;
   componentName: string;
   probability: string;
   series: Array<Series>;
+}
+
+interface PureComponent {
+  name: string;
+  data: number[][][]; // e.g. (5, 3000, 2)
+  state: string;
 }
 
 @Component({
@@ -65,47 +72,49 @@ interface ComponentsViewObject {
   }
 })
 export default class DetectSetting extends Vue {
-  selected: Array<string> = ['乙醇', 'DMSO'];
-  componentsToDetect: Array<string> = ['甲醇', '乙醇', 'DMF', 'DMSO'];
+  selected: Array<string> = [];
+  componentsToDetect: Array<string> = [];
   isDetected: boolean = false;
 
   expand: boolean = false;
   headers: Array<any> = [
-    {text: 'id', value: 'id'},
     {text: '组分名', value: 'componentName'},
     {text: '存在的概率', value: 'probability'}
   ];
   results: Array<ComponentsViewObject> = [];
 
-  detect() {
-    this.results.push({
-      id: 1,
-      componentName: '乙醇',
-      probability: '0%',
-      series: []
-    });
-    this.results.push({
-      id: 2,
-      componentName: 'DMSO',
-      probability: '0%',
-      series: []
-    });
-    this.isDetected = true;
-    // tricky code
-    Axios.get('http://127.0.0.1:5000/api/v1/trick/1').then((response: AxiosResponse) => {
-      this.results.push({
-        id: 1,
-        componentName: response.data[1].name,
-        probability: '100%',
-        series: [
-          {name: response.data[0].name, data: response.data[0].data},
-          {name: response.data[1].name, data: response.data[1].data}
-        ]
-      })
-      this.isDetected = true;
-    }).catch((error: any) => {
-      console.log(error);
+  constructor() {
+    super();
+    ComponentRepository.loadComponents()
+    .then((response: AxiosResponse) => {
+      this.componentsToDetect = response.data
+      .filter((component: PureComponent) => component.state === 'online')
+      .map((component: PureComponent) => component.name)
     })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+  }
+
+  detect() {
+    DetectRepository.detectComponents(
+      this.$store.getters.targetSpectra.name.split('-')[0],
+      this.$store.getters.targetSpectra.data,
+      this.selected
+    )
+    .then((response: AxiosResponse) => {
+      for (let rev of response.data) {
+        this.results.push({
+          componentName: rev.name,
+          probability: rev.probability,
+          series: [this.$store.state.targetSpectra, {name: rev.name, data: rev.data}]
+        })
+      };
+      this.isDetected = true;
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
   }
 }
 

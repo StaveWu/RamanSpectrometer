@@ -61,7 +61,6 @@ import Spectrum from '@/components/Spectrum.vue';
 
 import { Component, Prop, Watch } from "vue-property-decorator";
 import {Series} from '@/utils';
-import store from '@/store';
 
 @Component({
   components: {
@@ -77,7 +76,7 @@ export default class PreprocessView extends Vue {
   readonly tabNames: Array<string> = ['常规处理', '光谱去噪', '基线校正', '组分识别'];
 
   get spectraDeque() {
-    return store.state.spectraDeque;
+    return this.$store.state.spectraDeque;
   }
 }
 </script>
