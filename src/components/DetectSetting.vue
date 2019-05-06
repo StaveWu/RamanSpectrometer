@@ -56,6 +56,7 @@ const DetectRepository = RepositoryFactory.get('detect');
 
 interface ComponentsViewObject {
   componentName: string;
+  formula: string;
   probability: string;
   series: Array<Series>;
 }
@@ -79,6 +80,7 @@ export default class DetectSetting extends Vue {
   expand: boolean = false;
   headers: Array<any> = [
     {text: '组分名', value: 'componentName'},
+    {text: '化学式', value: 'formula'},
     {text: '存在的概率', value: 'probability'}
   ];
   results: Array<ComponentsViewObject> = [];
@@ -106,6 +108,7 @@ export default class DetectSetting extends Vue {
       for (let rev of response.data) {
         this.results.push({
           componentName: rev.name,
+          formula: rev.formula,
           probability: rev.probability,
           series: [this.$store.state.targetSpectra, {name: rev.name, data: rev.data}]
         })
