@@ -3,14 +3,14 @@
     <v-dialog v-model="dialog" max-width="500px">
       <v-card>
         <v-card-title>
-          <h1>{{ formTitle }}</h1>
+          <h1>{{ dialogTitle }}</h1>
         </v-card-title>
 
         <v-card-text>
           <v-container grid-list-md>
             <v-layout wrap>
               <v-flex xs12 sm6 md4>
-                <v-text-field v-model="editedItem.componentName" label="组分名"></v-text-field>
+                <v-text-field v-model="editedItem.componentName" label="组分名" :disabled="disabled"></v-text-field>
               </v-flex>
               <v-flex xs12 sm6 md4>
                 <v-text-field v-model="editedItem.formula" label="化学式"></v-text-field>
@@ -42,7 +42,7 @@
     <v-container>
       <v-layout align-center wrap>
         <v-flex grow>
-          <v-text-field placeholder="Search..." clearable prepend-inner-icon="search"></v-text-field>
+          <v-text-field placeholder="Search..." clearable prepend-inner-icon="search" v-model="search"></v-text-field>
         </v-flex>
 
         <v-flex shrink pl-3>
@@ -51,7 +51,7 @@
 
         <v-flex xs12 pt-3>
           <v-card>
-            <v-data-table :headers="headers" :items="components" expand="expand" item-key="componentName">
+            <v-data-table :headers="headers" :items="components" :search="search" expand="expand" item-key="componentName">
               <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
                   <td>{{ props.item.componentName }}</td>
@@ -101,6 +101,11 @@ import Spectrum from '@/components/Spectrum.vue';
 import {remote} from 'electron';
 import fs from 'fs';
 import {Series} from '@/utils';
+import RepositoryFactory from '../repositories/RepositoryFactory';
+import { AxiosResponse, AxiosError } from 'axios';
+import path from 'path';
+
+const ComponentRepository = RepositoryFactory.get('component');
 
 interface RowViewObject { // 定义行对象
   componentName: string;
@@ -127,14 +132,27 @@ export default class PureLibrary extends Vue {
     {text: '模型状态', value: 'state'},
     {text: '操作', value: 'actions', sortable: false}
   ];
-  components: Array<RowViewObject> = [
-    {componentName: '乙醇', formula: 'C2H5OH', state: 'online', series: {name: '', data: [1, 2, 3, 2]}},
-    {componentName: 'DMSO', formula: '(CH3)2SO', state: 'busy', series: {name: '', data: [2, 22, 4, 7]}},
-    {componentName: 'DMF', formula: 'C3H7NO', state: 'online', series: {name: '', data: [2, 22, 4, 7]}},
-    {componentName: '二甲醚', formula: 'C2H6O', state: 'online', series: {name: '', data: [2, 22, 4, 7]}},
-    {componentName: '四氯化碳', formula: 'CCl4', state: 'offline', series: {name: '', data: [2, 22, 4, 7]}},
-    {componentName: '乙酸', formula: 'CH3COOH', state: 'offline', series: {name: '', data: [2, 22, 4, 7]}},
-  ]
+  components: Array<RowViewObject> = [];
+
+  search: string = '';
+
+  constructor() {
+    super();
+    ComponentRepository.loadComponents()
+    .then((response: AxiosResponse) => {
+        response.data.array.forEach((ele: any) => {
+          this.components.push({
+          componentName: ele.name,
+          formula: ele.formula,
+          state: ele.state,
+          series: {name: ele.name, data: ele.data}
+        });
+      });
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+  }
 
   newItem() {
     this.editItem(this.defaultItem);
@@ -148,11 +166,23 @@ export default class PureLibrary extends Vue {
 
   deleteItem(item: RowViewObject) {
     const index = this.components.indexOf(item);
-    confirm('确定要删除该组分吗?') && this.components.splice(index, 1);
+    if (confirm('确定要删除该组分吗?')) {
+      ComponentRepository.removeComponent(item.componentName)
+      .then((response: AxiosResponse) => {
+        this.components.splice(index, 1);
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
+      })
+    }
   }
 
-  get formTitle() {
+  get dialogTitle() {
     return this.editedIndex == -1 ? '新建组分' : '编辑组分';
+  }
+
+  get disabled() {
+    return this.editedIndex == -1 ? false : true;
   }
 
   close() {
@@ -160,14 +190,28 @@ export default class PureLibrary extends Vue {
     setTimeout(() => {
       this.editedItem = Object.assign({}, this.defaultItem);
       this.editedIndex = -1;
-    }, 300)
+    }, 300);
   }
 
   save() {
     if (this.editedIndex > -1) { // 更新组分
-      Object.assign(this.components[this.editedIndex], this.editedItem);
+      ComponentRepository.updateComponent(this.editedItem.componentName, 
+        this.editedItem.formula, this.editedItem.series.data)
+      .then((response: AxiosResponse) => {
+        Object.assign(this.components[this.editedIndex], this.editedItem);
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
+      });
     } else { // 新建组分
-      this.components.push(this.editedItem);
+      ComponentRepository.addComponent(this.editedItem.componentName, 
+        this.editedItem.formula, this.editedItem.series.data)
+      .then((response: AxiosResponse) => {
+        this.components.push(this.editedItem);
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
+      });
     }
     this.close();
   }
@@ -181,9 +225,14 @@ export default class PureLibrary extends Vue {
         if (err) {
           return console.error(err);
         } else {
-          let arr = new Array<number>();
-          data.toString().trim().split('\n').map(line => arr.push(parseFloat(line.split('\t')[1])));
-          this.editedItem.series = {name: '', data: arr};
+          let name = path.parse(selectedFilePaths[0]).name;
+          let points = new Array<Array<number>>();
+          data.toString().trim().split('\n').map(line => {
+            let s = line.split('\t');
+            points.push([parseFloat(s[0]), parseFloat(s[1])]);
+          });
+
+          this.editedItem.series = {name: name, data: points};
         }
       })
     }

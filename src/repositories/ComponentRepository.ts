@@ -5,9 +5,10 @@ export default {
   loadComponents() {
     return Repository.get(`${resource}`);
   },
-  addComponent(name: string, data: number[][]) {
+  addComponent(name: string, formula: string, data: number[][]) {
     return Repository.post(`${resource}`, {
       name: name,
+      formula: formula,
       data: data
     });
   },
@@ -19,6 +20,12 @@ export default {
       params: {
         name: name
       }
+    });
+  },
+  updateComponent(name: string, formula: string, data: number[][]) {
+    return Repository.patch(`${resource}/${name}`, {
+      formula: formula,
+      data: data
     });
   }
 }
