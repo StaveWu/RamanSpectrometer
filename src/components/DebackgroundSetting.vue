@@ -47,7 +47,8 @@ export default class DebackgroundSetting extends Vue {
   }
 
   debackground() {
-    DebackgroundRepository.get(this.selected.value, this.parameters)
+    DebackgroundRepository.get(this.selected.value, store.getters.targetSpectra.data, 
+      store.getters.targetSpectra.data, this.parameters)
     .then((response: AxiosResponse) => {
       store.commit('enqueue', new Series(response.data.name, response.data.data));
     })

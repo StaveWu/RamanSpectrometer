@@ -34,7 +34,8 @@ export default class ConventionalSetting extends Vue {
   parameters?: any;
 
   preprocess() {
-    ConventionalRepository.get(this.selected.value, this.parameters)
+    ConventionalRepository.get(this.selected.value, store.getters.targetSpectra.name, 
+      store.getters.targetSpectra.data, this.parameters)
     .then((response: AxiosResponse) => {
       store.commit('enqueue', new Series(response.data.name, response.data.data));
     })

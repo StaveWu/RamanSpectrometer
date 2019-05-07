@@ -2,8 +2,12 @@ import Repository from './Repository';
 
 const resource = '/debackgrounds';
 export default {
-  get(method: string, data?: any) {
-    return Repository.post(`${resource}/${method}`, data);
+  get(method: string, name: string, data: number[][], params: any) {
+    return Repository.post(`${resource}/${method}`, {
+      name: name,
+      data: data,
+      params: params
+    });
   },
 }
 
