@@ -17,9 +17,10 @@ export default {
     });
   },
 
-  tagSpectra(targetSpectraName: string, componentNames: string[]) {
+  tagSpectra(targetSpectraName: string, componentName: string, probability: number) {
     return Repository.patch(`${resource}/${targetSpectraName}`, {
-      componentNames: componentNames
+      componentName: componentName,
+      probability: probability
     });
   }
 }

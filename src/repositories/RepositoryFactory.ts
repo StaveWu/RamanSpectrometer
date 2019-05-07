@@ -3,6 +3,8 @@ import DebackgroundRepository from '../repositories/DebackgroundRepository'
 import ConventionalRepository from '../repositories/ConventionalRepository'
 import ComponentRepository from './ComponentRepository';
 import DetectRepository from './DetectRepository';
+import SpectraRepository from './SpectraRepository';
+import SettingsRepository from './SettingsRepository';
 
 interface Indexable {
   [index: string]: any;
@@ -13,7 +15,9 @@ const repositories: Indexable = {
   debackground: DebackgroundRepository,
   conventional: ConventionalRepository,
   component: ComponentRepository,
-  detect: DetectRepository
+  detect: DetectRepository,
+  spectra: SpectraRepository,
+  settings: SettingsRepository
 }
 
 export default {

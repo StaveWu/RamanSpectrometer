@@ -30,7 +30,7 @@
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn outline color="warning">预测错误?</v-btn>
+                  <v-btn outline color="warning" @click="tagSpectra(props.item.componentName)">预测错误?</v-btn>
                 </v-card-actions>
               </v-card>
             </template>
@@ -53,6 +53,7 @@ import RepositoryFactory from '../repositories/RepositoryFactory';
 
 const ComponentRepository = RepositoryFactory.get('component');
 const DetectRepository = RepositoryFactory.get('detect');
+const SpectraRepository = RepositoryFactory.get('spectra');
 
 interface ComponentsViewObject {
   componentName: string;
@@ -63,7 +64,8 @@ interface ComponentsViewObject {
 
 interface PureComponent {
   name: string;
-  data: number[][][]; // e.g. (5, 3000, 2)
+  formula: string;
+  data: number[][];
   state: string;
 }
 
@@ -76,6 +78,7 @@ export default class DetectSetting extends Vue {
   selected: Array<string> = [];
   componentsToDetect: Array<string> = [];
   isDetected: boolean = false;
+  components: Array<PureComponent> = []; // cache component data
 
   expand: boolean = false;
   headers: Array<any> = [
@@ -91,33 +94,58 @@ export default class DetectSetting extends Vue {
     .then((response: AxiosResponse) => {
       this.componentsToDetect = response.data
       .filter((component: PureComponent) => component.state === 'online')
-      .map((component: PureComponent) => component.name)
+      .map((component: PureComponent) => component.name);
+      
+      this.components = response.data;
     })
     .catch((error: AxiosError) => {
       console.log(error);
     });
   }
 
+  private getTargetSpectraName() {
+    return this.$store.getters.targetSpectra.name.split('-')[0];
+  }
+
   detect() {
+    let targetName = this.getTargetSpectraName();
     DetectRepository.detectComponents(
-      this.$store.getters.targetSpectra.name.split('-')[0],
+      targetName,
       this.$store.getters.targetSpectra.data,
       this.selected
     )
     .then((response: AxiosResponse) => {
       for (let rev of response.data) {
+        let comp = this.getComponent(rev.name);
         this.results.push({
           componentName: rev.name,
-          formula: rev.formula,
+          formula: comp.formula,
           probability: rev.probability,
-          series: [this.$store.state.targetSpectra, {name: rev.name, data: rev.data}]
+          series: [this.$store.state.targetSpectra, {name: comp.name, data: comp.data}]
         })
       };
       this.isDetected = true;
     })
-    .catch((error: AxiosError) => {
+    .catch((error: Error) => {
       console.log(error);
     });
+  }
+  private getComponent(compName: string) {
+    let compOptional = this.components.filter((comp: PureComponent) => comp.name === compName);
+    if (compOptional.length === 1) {
+      return compOptional[0];
+    }
+    else {
+      throw new Error(`find ${compOptional.length} of ${compName}`);
+    }
+  }
+
+  tagSpectra(compName: string) {
+    let probability = this.results.filter((comp: ComponentsViewObject) => {
+      comp.componentName === compName
+    })[0].probability;
+    let fliped = parseFloat(probability) > 0.5 ? 0 : 1;
+    SpectraRepository.tagSpectra(this.getTargetSpectraName(), compName, fliped);
   }
 }
 
