@@ -7,7 +7,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     spectraDeque: new Array<Series>(),
-    undoDeque: new Array<Series>()
+    undoDeque: new Array<Series>(),
+    dark: false
   },
   mutations: {
     enqueue(state, element: Series) {
@@ -27,6 +28,9 @@ export default new Vuex.Store({
     clear(state) {
       state.spectraDeque.length = 0;
       state.undoDeque.length = 0;
+    },
+    setDark(state, enable: boolean) {
+      state.dark = enable;
     }
   },
   actions: {
@@ -36,5 +40,8 @@ export default new Vuex.Store({
     targetSpectra: state => {
       return state.spectraDeque[state.spectraDeque.length - 1];
     },
+    dark(state) {
+      return state.dark;
+    }
   }
 });

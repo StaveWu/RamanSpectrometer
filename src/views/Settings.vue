@@ -109,15 +109,15 @@
         <v-flex xs12>
           <h3>主题设置</h3>
         </v-flex>
-        <v-flex xs12 pb-5>
-          <v-switch v-model="dark" color="primary" label="白-黑" hint="切换到其他页后更新" persistent-hint></v-switch>
+        <v-flex xs12 pb-4>
+          <v-switch v-model="dark" color="primary" label="白-黑" persistent-hint></v-switch>
         </v-flex>
 
         <v-flex xs12>
           <h3>关于拉曼光谱识别软件</h3>
         </v-flex>
         <v-flex xs12>
-          <v-subheader>当前版本：1.0.0</v-subheader>
+          <v-subheader>当前版本：0.1.0</v-subheader>
         </v-flex>
       </v-layout>
     </v-container>
@@ -128,16 +128,21 @@
 import Vue from 'vue'
 import { Component, Watch } from 'vue-property-decorator'
 import SGFilter from '@/components/SGFilter.vue'
-import airPLS from '@/components/AIRPLS.vue'
+import airPLS from '@/components/AIRPLS.vue';
+import RepositoryFactory from '../repositories/RepositoryFactory';
+import { AxiosResponse, AxiosError } from 'axios';
+import { Pipeline } from '../utils';
+import { Algorithm,
+  SG,
+  DAE,
+  WAVELET,
+  AIRPLS,
+  POLYFIT,
+  SVD_MAD,
+  MINMAX_SCALE,
+  SCALE } from '../common/Algorithm';
 
-enum Alogrithm {
-  SG = 'S-G滤波',
-  WAVELET = '小波变换',
-  DAE = '卷积去噪自编码器',
-  AIRPLS = 'airPLS',
-  POLYFIT = '多项式拟合',
-  SVD_MAD = '奇异值分解-中位数绝对偏差'
-}
+const SettingsRepository = RepositoryFactory.get('settings');
 
 @Component({
   components: {
@@ -150,32 +155,61 @@ export default class Settings extends Vue {
   wavenumbersRange: Array<number> = [0, 3000];
   e1: number = 1;
   steps: number = 2;
-
-  selected: Alogrithm = Alogrithm.SG;
-  items: Array<Alogrithm> = [
-    Alogrithm.SG, 
-    Alogrithm.WAVELET, 
-    Alogrithm.DAE,
-    Alogrithm.AIRPLS,
-    Alogrithm.POLYFIT,
-    Alogrithm.SVD_MAD
+  selected: Algorithm = SG;
+  items: Array<Algorithm> = [
+    SG, 
+    WAVELET, 
+    DAE,
+    AIRPLS,
+    POLYFIT,
+    SVD_MAD
   ]; 
+
+  pipeline: Pipeline[] = [{method: SG.value, params: {}}]
+
+  constructor() {
+    super();
+    // init settings
+    SettingsRepository.getWavenumbersRange()
+    .then((resp: AxiosResponse) => {
+      this.wavenumbersRange = [resp.data.start, resp.data.end];
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+
+    SettingsRepository.getPipeline()
+    .then((resp: AxiosResponse) => {
+      // assign pipeline
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+  }
 
   @Watch('dark')
   switchTheme() {
-    Vue.prototype.dark = this.dark;
+    this.$store.commit('setDark', this.dark);
   }
 
   mounted() {
-    this.dark = this.getDark();
+    this.dark = this.$store.getters.dark;
   }
 
-  private getDark() {
-    let res = Vue.prototype.dark;
-    if (res === undefined) {
-      res = false;
-    }
-    return res;
+  @Watch('wavenumbersRange', {deep: true})
+  wavenumbersRangeUpdated() {
+    SettingsRepository.setWavenumbersRange(this.wavenumbersRange[0], this.wavenumbersRange[1])
+    .catch((error: AxiosError) =>{
+      console.log(error);
+      // undo change for client
+      SettingsRepository.getWavenumbersRange()
+      .then((resp: AxiosResponse) => {
+        this.wavenumbersRange = [resp.data.start, resp.data.end];
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
+      })
+    });
   }
 
   onInput(val: string) {
@@ -184,18 +218,18 @@ export default class Settings extends Vue {
 
   nextStep (n: number) {
     if (n === this.steps) {
-      this.e1 = 1
+      this.e1 = 1;
     } else {
-      this.e1 = n + 1
+      this.e1 = n + 1;
     }
   }
 
-  isAIRPLS(): boolean {
-    return this.selected === Alogrithm.AIRPLS;
+  isAIRPLS() {
+    return this.selected === AIRPLS;
   }
 
-  isSG(): boolean {
-    return this.selected === Alogrithm.SG;
+  isSG() {
+    return this.selected === SG;
   }
 }
 </script>

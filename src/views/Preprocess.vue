@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-toolbar color="white" tabs flat>
+    <v-toolbar :class="{'white': !dark, 'grey': dark, 'darken-3': dark}" tabs flat>
       <v-btn icon>
         <v-icon>undo</v-icon>
       </v-btn>
@@ -74,6 +74,10 @@ import {Series} from '@/utils';
 export default class PreprocessView extends Vue {
   active: number = 0;
   readonly tabNames: Array<string> = ['常规处理', '光谱去噪', '基线校正', '组分识别'];
+
+  get dark() {
+    return this.$store.state.dark;
+  }
 
   get spectraDeque() {
     return this.$store.state.spectraDeque;

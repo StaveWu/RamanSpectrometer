@@ -1,3 +1,4 @@
+
 export class Series {
   name: string;
   data: Array<number> | Array<Array<number>>;
@@ -5,4 +6,9 @@ export class Series {
     this.name = name;
     this.data = data;
   }
+}
+
+export interface Pipeline {
+  method: string,
+  params: any,
 }
