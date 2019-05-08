@@ -85,12 +85,12 @@
                 <v-container fluid>
                   <v-layout wrap>
                     <v-flex text-xs-left xs12>
-                      <v-combobox v-model="selected" :items="items" chips label="请选择预处理算法"></v-combobox>
+                      <v-combobox v-model="selected[n - 1]" :items="items" chips label="请选择预处理算法"></v-combobox>
                     </v-flex>
                     
                     <v-flex text-xs-left xs12>
-                      <air-pls v-if="isAIRPLS()"></air-pls>
-                      <sg-filter v-if="isSG()"></sg-filter>
+                      <air-pls v-if="isAIRPLS(n - 1)" v-model="airplsParams"></air-pls>
+                      <sg-filter v-if="isSG(n - 1)" v-model="sgfilterParams"></sg-filter>
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -154,22 +154,27 @@ export default class Settings extends Vue {
   dark: boolean = false;
   wavenumbersRange: Array<number> = [0, 3000];
   e1: number = 1;
-  steps: number = 2;
-  selected: Algorithm = SG;
+  steps: number = 0;
+  selected: Algorithm[] = [];
   items: Array<Algorithm> = [
+    MINMAX_SCALE,
+    SCALE,
     SG, 
     WAVELET, 
     DAE,
     AIRPLS,
     POLYFIT,
-    SVD_MAD
+    SVD_MAD,
   ]; 
 
-  pipeline: Pipeline[] = [{method: SG.value, params: {}}]
+  pipeline: Pipeline[] = [];
+
+  sgfilterParams: any = {order: 3, windowLength: 9};
+  airplsParams: any = {lambda: 1e4};
 
   constructor() {
     super();
-    // init settings
+    // init waverange
     SettingsRepository.getWavenumbersRange()
     .then((resp: AxiosResponse) => {
       this.wavenumbersRange = [resp.data.start, resp.data.end];
@@ -178,9 +183,26 @@ export default class Settings extends Vue {
       console.log(error);
     });
 
+    // init pipeline
     SettingsRepository.getPipeline()
     .then((resp: AxiosResponse) => {
-      // assign pipeline
+      resp.data.foreach((ele: any) => {
+        this.pipeline.push({
+          method: ele.method,
+          params: ele.params
+        });
+      });
+
+      this.steps = this.pipeline.length;
+      this.pipeline.forEach(ele => {
+        let algorithm = this.items.filter(e => e.value === ele.method)[0];
+        this.selected.push(algorithm);
+        if (algorithm === SG) {
+          this.sgfilterParams = ele.params;
+        } else if (algorithm === AIRPLS) {
+          this.airplsParams = ele.params;
+        }
+      });
     })
     .catch((error: AxiosError) => {
       console.log(error);
@@ -201,14 +223,6 @@ export default class Settings extends Vue {
     SettingsRepository.setWavenumbersRange(this.wavenumbersRange[0], this.wavenumbersRange[1])
     .catch((error: AxiosError) =>{
       console.log(error);
-      // undo change for client
-      SettingsRepository.getWavenumbersRange()
-      .then((resp: AxiosResponse) => {
-        this.wavenumbersRange = [resp.data.start, resp.data.end];
-      })
-      .catch((error: AxiosError) => {
-        console.log(error);
-      })
     });
   }
 
@@ -216,20 +230,25 @@ export default class Settings extends Vue {
     this.steps = parseInt(val);
   }
 
-  nextStep (n: number) {
+  nextStep(n: number) {
     if (n === this.steps) {
       this.e1 = 1;
+      // send pipeline settings
+      SettingsRepository.setPipeline(this.pipeline)
+      .catch((error: AxiosError) => {
+        console.log(error);
+      });
     } else {
       this.e1 = n + 1;
     }
   }
 
-  isAIRPLS() {
-    return this.selected === AIRPLS;
+  isAIRPLS(i: number) {
+    return this.selected[i] === AIRPLS;
   }
 
-  isSG() {
-    return this.selected === SG;
+  isSG(i: number) {
+    return this.selected[i] === SG;
   }
 }
 </script>
