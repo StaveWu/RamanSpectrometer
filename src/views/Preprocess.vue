@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-toolbar :class="{'white': !dark, 'grey': dark, 'darken-3': dark}" tabs flat>
-      <v-btn icon>
+      <v-btn icon @click="undo()">
         <v-icon>undo</v-icon>
       </v-btn>
 
@@ -81,6 +81,10 @@ export default class PreprocessView extends Vue {
 
   get spectraDeque() {
     return this.$store.state.spectraDeque;
+  }
+
+  undo() {
+    this.$store.commit('undo');
   }
 }
 </script>

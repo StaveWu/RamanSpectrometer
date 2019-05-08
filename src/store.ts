@@ -23,7 +23,13 @@ export default new Vuex.Store({
       }
     },
     undo(state) {
-      
+      let poped = state.undoDeque.pop();
+      if (poped === undefined) {
+        console.log('nothing to undo');
+      } else {
+        state.spectraDeque.splice(0, 1);
+        state.spectraDeque.push(poped);
+      }
     },
     clear(state) {
       state.spectraDeque.length = 0;
