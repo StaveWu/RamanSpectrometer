@@ -11,10 +11,10 @@
             <v-toolbar flat>
               <v-toolbar-title>目标光谱</v-toolbar-title>
               <v-spacer></v-spacer>
-              <v-btn icon>
+              <v-btn icon @click="uploadSpectras()">
                 <v-icon>add</v-icon>
               </v-btn>
-              <v-btn icon>
+              <v-btn icon @click="clearSpectras()">
                 <v-icon>clear_all</v-icon>
               </v-btn>
             </v-toolbar>
@@ -43,7 +43,7 @@
             <v-toolbar flat>
               <v-toolbar-title>识别结果</v-toolbar-title>
               <v-spacer></v-spacer>
-              <v-btn icon>
+              <v-btn icon @click="saveReport()">
                 <v-icon>save_alt</v-icon>
               </v-btn>
             </v-toolbar>
@@ -64,7 +64,7 @@
                 <template slot="expand" slot-scope="props">
                   <v-card flat>
                     <v-responsive :aspect-ratio="16/9">
-                      <spectrum :datas="datas"></spectrum>
+                      <spectrum :datas="props.item.series"></spectrum>
                     </v-responsive>
 
                     <v-card-actions>
@@ -109,17 +109,28 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component';
-import {Series} from '@/utils'
+import {Series, PureComponent} from '@/utils';
+import { AxiosResponse, AxiosError } from 'axios';
 import Spectrum from '@/components/Spectrum.vue';
+import RepositoryFactory from '../repositories/RepositoryFactory';
+import {remote} from 'electron';
+import fs from 'fs';
+import path from 'path';
+
+const ComponentRepository = RepositoryFactory.get('component');
+const SpectraRepository = RepositoryFactory.get('spectra');
+const DetectRepository = RepositoryFactory.get('detect');
 
 interface TargetListObject {
   file: string;
   folder: string;
+  series: Series;
 }
 
 interface ResultRowViewObject {
   file: string;
   probabilities: Array<string>;
+  series: Array<Series>;
 }
 
 @Component({
@@ -128,25 +139,38 @@ interface ResultRowViewObject {
   }
 })
 export default class BatchDetection extends Vue {
-  selected: Array<string> = ['甲醇', '乙醇', 'DMF', 'DMSO'];
-  componentsToDetect: Array<string> = ['甲醇', '乙醇', 'DMF', 'DMSO'];
-  datas: Array<Series> = [{name: '', data: [1, 2, 3, 9, 12]}];
+  components: Array<PureComponent> = []; // cache component data
+  selected: Array<string> = [];
+  componentsToDetect: Array<string> = [];
   isDetected = false;
   showFeedbackPart = false;
   
-  targetItems: Array<TargetListObject> = [
-    {file: '1hao-100%-1s-_M', folder: 'E:/拉曼光谱识别/数据/烟草/样品'},
-    {file: '2hao-100%-1s-_M', folder: 'E:/拉曼光谱识别/数据/烟草/样品'},
-    {file: '3hao-100%-1s-_M', folder: 'E:/拉曼光谱识别/数据/烟草/样品'},
-  ]
+  targetItems: Array<TargetListObject> = [];
 
   headers: Array<any> = [];
   results: Array<ResultRowViewObject> = [];
+
+  constructor() {
+    super();
+    ComponentRepository.loadComponents()
+    .then((response: AxiosResponse) => {
+      this.componentsToDetect = response.data
+      .filter((component: any) => component.state === 'online')
+      .map((component: any) => component.name);
+      
+      this.components = response.data;
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+  }
 
   detect() {
     // 清空table
     this.headers.length = 0;
     this.results.length = 0;
+    this.showFeedbackPart = false;
+    this.isDetected = false;
 
     // 完善headers
     this.headers.push({text: '文件名', value: 'fileName'});
@@ -155,13 +179,83 @@ export default class BatchDetection extends Vue {
     }
     
     // 完善行对象
-    this.results = [
-      {file:'1hao-100%-1s-_M', probabilities: ['100%', '0%', '0%', '0%']},
-      {file:'2hao-100%-1s-_M', probabilities: ['100%', '100%', '0%', '0%']},
-      {file:'3hao-100%-1s-_M', probabilities: ['0%', '0%', '100%', '0%']},
-    ]
-    this.isDetected = true;
-    this.showFeedbackPart = false;
+    DetectRepository.batchDetectComponents(
+      this.targetItems.map(ele => ele.series),
+      this.selected
+    )
+    .then((response: AxiosResponse) => {
+      for (let i = 0; i < response.data.results.length; i++) {
+        let res = response.data.results[i];
+        this.results.push({
+          file: res.name,
+          probabilities: res.probabilities,
+          series: [this.targetItems[i].series, {name: this.components[i].name, data: this.components[i].data}]
+        })
+      };
+      this.isDetected = true;
+    })
+    .catch((error: Error) => {
+      console.log(error);
+    });
+  }
+
+  uploadSpectras() {
+    const selectedFilePaths = remote.dialog.showOpenDialog({properties: ['multiSelections']});
+    if (selectedFilePaths === undefined) { // skip if not select
+      return;
+    } 
+    else {
+      selectedFilePaths.forEach(p => {
+        fs.readFile(p, (err, data) => {
+          if (err) {
+            return console.error(err);
+          } 
+          else {
+            let name = path.parse(p).name;
+            let folder = path.parse(p).dir;
+            // access points
+            let points = new Array<Array<number>>();
+            data.toString().trim().split('\n').map(line => {
+              let s = line.split('\t');
+              points.push([parseFloat(s[0]), parseFloat(s[1])]);
+            });
+
+            this.targetItems.push({file: name, folder: folder, series: {name: name, data: points}});
+            SpectraRepository.addSpectra(name, points)
+            .catch((error: AxiosError) => {
+              console.log(error);
+            });
+          }
+        });
+      });
+    }
+  }
+
+  clearSpectras() {
+    this.targetItems.splice(0, this.targetItems.length);
+    this.results.splice(0, this.results.length);
+    this.isDetected = false;
+  }
+
+  saveReport() {
+    const pathname = remote.dialog.showSaveDialog({title: '识别报告保存为'});
+    if (pathname === undefined) {
+      return;
+    } 
+    else {
+      let dataToWriteArr = new Array<string>();
+      dataToWriteArr.push(this.headers.map(ele => ele.text).join('\t'));
+      this.results.map(obj => {
+        dataToWriteArr.push([obj.file, ...obj.probabilities].join('\t'));
+      });
+      let dataToWrite = dataToWriteArr.join('\r\n');
+
+      fs.writeFile(pathname, dataToWrite, {encoding: 'utf8'}, err => {
+        if (err) {
+          console.log(err);
+        }
+      });
+    }
   }
 }
 </script>

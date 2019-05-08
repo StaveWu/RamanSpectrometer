@@ -12,3 +12,10 @@ export interface Pipeline {
   method: string,
   params: any,
 }
+
+export interface PureComponent {
+  name: string;
+  formula: string;
+  data: number[][];
+  state: string;
+}

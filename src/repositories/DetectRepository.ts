@@ -1,4 +1,5 @@
 import Repository from '../repositories/Repository';
+import { Series } from '@/utils';
 
 const resource = '/detects';
 export default {
@@ -7,6 +8,12 @@ export default {
       name: targetName,
       data: targetSpectra,
       componentNames: componentNames
+    });
+  },
+  batchDetectComponents(targetSpectras: Array<Series>, compNames: string[]) {
+    return Repository.post(`${resource}/batch`, {
+      targetSpectras,
+      componentNames: compNames
     });
   }
 }
