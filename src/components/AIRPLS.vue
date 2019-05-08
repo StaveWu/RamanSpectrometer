@@ -16,17 +16,26 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component';
-import {Watch} from 'vue-property-decorator';
+import {Watch, Model, Emit} from 'vue-property-decorator';
 
 @Component
 export default class AIRPLS extends Vue {
-  lambda: number = 1e7;
+  lambda: number;
+  
+  @Model('paramsChanged')
+  params!: any;
+
+  constructor() {
+    super();
+    this.lambda = this.params.lambda;
+  }
 
   @Watch('lambda')
+  @Emit('paramsChanged')
   updateParameters() {
-    this.$emit('paramUpdated', {
+    return {
       lambda: this.lambda
-    })
+    }
   }
 }
 </script>

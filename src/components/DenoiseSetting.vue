@@ -6,7 +6,7 @@
       </v-flex>
 
       <v-flex xs12>
-        <sg-filter v-if="isSG()" @paramUpdated="updateParams($event)"></sg-filter>
+        <sg-filter v-if="isSG()" v-model="params"></sg-filter>
       </v-flex>
 
       <v-flex text-xs-right pt-3>
@@ -26,6 +26,7 @@ import store from '@/store';
 import { Series } from '@/utils';
 import RepositoryFactory from '@/repositories/RepositoryFactory';
 import { Algorithm, SG, DAE, WAVELET } from '../common/Algorithm'
+import { Watch } from 'vue-property-decorator';
 
 const DenoiseRepository = RepositoryFactory.get('denoise');
 
@@ -41,7 +42,13 @@ export default class DenoiseSetting extends Vue {
     WAVELET, 
     DAE
   ];
-  parameters?: any;
+
+  params: any = {order: 3, windowLength: 9};
+
+  @Watch('params')
+  changed() {
+    console.log(this.params);
+  }
   
   isSG() {
     return this.selected === SG;
@@ -49,7 +56,7 @@ export default class DenoiseSetting extends Vue {
   
   denoise() {
     DenoiseRepository.get(this.selected.value, store.getters.targetSpectra.name, 
-      store.getters.targetSpectra.data, this.parameters)
+      store.getters.targetSpectra.data, this.params)
     .then((response: AxiosResponse) => {
       store.commit('enqueue', new Series(response.data.name, response.data.data));
     })
@@ -64,9 +71,6 @@ export default class DenoiseSetting extends Vue {
     }
   }
 
-  updateParams(event: any) {
-    this.parameters = event;
-  }
 }
 </script>
 

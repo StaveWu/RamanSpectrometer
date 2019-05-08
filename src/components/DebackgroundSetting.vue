@@ -6,7 +6,7 @@
       </v-flex>
       
       <v-flex text-xs-left md12 xs12 sm12 lg12>
-        <air-pls v-if="isAIRPLS()" @paramUpdated="updateParams($event)"></air-pls>
+        <air-pls v-if="isAIRPLS()" v-model="params"></air-pls>
       </v-flex>
 
       <v-flex text-xs-right pt-3>
@@ -40,7 +40,7 @@ export default class DebackgroundSetting extends Vue {
     AIRPLS,
     POLYFIT
   ];
-  parameters?: any;
+  params: any = {lambda: 1e4};
   
   isAIRPLS() {
     return this.selected === AIRPLS;
@@ -48,7 +48,7 @@ export default class DebackgroundSetting extends Vue {
 
   debackground() {
     DebackgroundRepository.get(this.selected.value, store.getters.targetSpectra.data, 
-      store.getters.targetSpectra.data, this.parameters)
+      store.getters.targetSpectra.data, this.params)
     .then((response: AxiosResponse) => {
       store.commit('enqueue', new Series(response.data.name, response.data.data));
     })
@@ -63,9 +63,6 @@ export default class DebackgroundSetting extends Vue {
     }
   }
 
-  updateParams(event: any) {
-    this.parameters = event;
-  }
 }
 </script>
 
