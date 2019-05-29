@@ -60,9 +60,10 @@ import Spectrum from '@/components/Spectrum.vue';
 import {remote} from 'electron';
 import fs from 'fs';
 import {Series} from '@/utils';
-import Axios, { AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import store from '../store'
-import path from 'path'
+import path from 'path';
+import SpectraRepository from '../repositories/SpectraRepository'
 
 @Component({
   components: {
@@ -82,9 +83,9 @@ export default class Home extends Vue {
   }
 
   created() {
-    Axios.get('http://127.0.0.1:5000/api/v1/spectras?count=6')
+    SpectraRepository.loadSpectra()
       .then((response: AxiosResponse) => {
-        for (const s of response.data) {
+        for (const s of response.data.spectra) {
           this.spectras.push({name: s.name, data: s.data});
           this.numRecentSpectras = this.spectras.length;
         }

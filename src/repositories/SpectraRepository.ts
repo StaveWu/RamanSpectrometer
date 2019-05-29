@@ -1,8 +1,8 @@
 import Repository from '../repositories/Repository';
 
-const resource = '/spectras';
+const resource = '/spectra';
 export default {
-  loadSpectras() {
+  loadSpectra() {
     return Repository.get(`${resource}`, {
       params: {
         count: 8
@@ -10,14 +10,14 @@ export default {
     });
   },
 
-  addSpectra(name: string, data: number[][]) {
+  addSpectrum(name: string, data: number[][]) {
     return Repository.post(`${resource}`, {
       name: name,
       data: data
     });
   },
 
-  tagSpectra(targetSpectraName: string, componentName: string, probability: number) {
+  tagSpectrum(targetSpectraName: string, componentName: string, probability: number) {
     return Repository.patch(`${resource}/${targetSpectraName}`, {
       componentName: componentName,
       probability: probability
