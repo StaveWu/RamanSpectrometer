@@ -1,17 +1,17 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {Series} from '@/utils'
+import {SpectrumDO} from '@/utils'
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    spectraDeque: new Array<Series>(),
-    undoDeque: new Array<Series>(),
+    spectraDeque: new Array<SpectrumDO>(),
+    undoDeque: new Array<SpectrumDO>(),
     dark: false
   },
   mutations: {
-    enqueue(state, element: Series) {
+    enqueue(state, element: SpectrumDO) {
       state.spectraDeque.push(element);
     },
     dequeue(state) {

@@ -1,31 +1,33 @@
 import Repository from '../repositories/Repository';
+import {ComponentDO} from '@/utils';
 
 const resource = '/components';
 export default {
   loadComponents() {
     return Repository.get(`${resource}`);
   },
-  addComponent(name: string, formula: string, data: number[][]) {
+  addComponent(comp: ComponentDO) {
     return Repository.post(`${resource}`, {
-      name: name,
-      formula: formula,
-      data: data
+      name: comp.name,
+      formula: comp.formula,
+      owned_spectra: comp.owned_spectra
     });
   },
-  removeComponent(name: string) {
-    return Repository.delete(`${resource}/${name}`);
+  removeComponent(id: number) {
+    return Repository.delete(`${resource}/${id}`);
   },
-  searchComponent(name: string) {
+  searchComponent(id: number) {
     return Repository.get(`${resource}`, {
       params: {
-        name: name
+        id: id
       }
     });
   },
-  updateComponent(name: string, formula: string, data: number[][]) {
-    return Repository.patch(`${resource}/${name}`, {
-      formula: formula,
-      data: data
+  updateComponent(comp: ComponentDO) {
+    return Repository.patch(`${resource}/${comp.id}`, {
+      name: comp.name,
+      owned_spectra: comp.owned_spectra,
+      formula: comp.formula
     });
   }
 }

@@ -1,4 +1,5 @@
 import Repository from '../repositories/Repository';
+import { Spectrum } from '@/utils';
 
 const resource = '/spectra';
 export default {
@@ -10,10 +11,11 @@ export default {
     });
   },
 
-  addSpectrum(name: string, data: number[][]) {
+  addSpectrum(spec: Spectrum) {
     return Repository.post(`${resource}`, {
-      name: name,
-      data: data
+      id: spec.id,
+      name: spec.name,
+      data: spec.data
     });
   },
 

@@ -50,9 +50,8 @@ import Component from "vue-class-component";
 import Spectrum from "@/components/Spectrum.vue";
 import { remote } from "electron";
 import fs from "fs";
-import { Series } from "@/utils";
+import { SpectrumDO } from "@/utils";
 import { AxiosResponse } from "axios";
-import store from "../store";
 import path from "path";
 import SpectraRepository from "../repositories/SpectraRepository";
 
@@ -64,7 +63,7 @@ import SpectraRepository from "../repositories/SpectraRepository";
 export default class Home extends Vue {
   onLoading: boolean = true;
   numRecentSpectra: number = 0;
-  spectra: Array<Series> = [];
+  spectra: Array<SpectrumDO> = [];
   alertMessage: string = "";
   alertShow: boolean = false;
 
@@ -76,8 +75,8 @@ export default class Home extends Vue {
   created() {
     SpectraRepository.loadSpectra()
       .then((response: AxiosResponse) => {
-        for (const s of response.data.spectra) {
-          this.spectra.push({ name: s.name, data: s.data });
+        for (const spec of response.data.spectra) {
+          this.spectra.push(SpectrumDO.fromJson(spec));
           this.numRecentSpectra = this.spectra.length;
         }
       })
@@ -91,7 +90,8 @@ export default class Home extends Vue {
   }
 
   openSpectrum(i: number) {
-    this.postData(this.spectra[i]);
+    this.$store.commit('clear');
+    this.spectra[i].commitTo(this.$store);
   }
 
   importSpectrumFromFile() {
@@ -107,38 +107,24 @@ export default class Home extends Vue {
         if (err) {
           return console.error(err);
         } else {
-          // get filename as spectra's name
-          let name = path.parse(selectedFilePaths[0]).name;
-          // access points
-          let points = new Array<Array<number>>();
-          data
-            .toString()
-            .trim()
-            .split("\n")
-            .map(line => {
-              let s = line.split("\t");
-              points.push([parseFloat(s[0]), parseFloat(s[1])]);
-            });
-          SpectraRepository.addSpectrum(name, points)
+          let spec = SpectrumDO.fromFile(selectedFilePaths[0], data);
+
+          SpectraRepository.addSpectrum(spec)
             .then((response: AxiosResponse) => {
-              // get id
+              spec.id = response.data.id;
+              // data should be posted before preprocess page created, since
+              // this page need data to construct.
+              this.$store.commit('clear');
+              spec.commitTo(this.$store);
+              this.$router.push("/preprocess");
             })
             .catch((error: any) => {
               this.alertMessage = `${error}`;
               this.alertShow = true;
             });
-          // data should be posted before preprocess page created, since
-          // this page need data to construct.
-          this.postData({ name: name, data: points });
-          this.$router.push("/preprocess");
         }
       });
     }
-  }
-
-  private postData(data: Series) {
-    store.commit("clear");
-    store.commit("enqueue", data);
   }
 }
 </script>

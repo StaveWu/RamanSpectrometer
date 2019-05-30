@@ -60,7 +60,6 @@ import ConventionalSetting from '@/components/ConventionalSetting.vue';
 import Spectrum from '@/components/Spectrum.vue';
 
 import { Component, Prop, Watch } from "vue-property-decorator";
-import {Series} from '@/utils';
 
 @Component({
   components: {

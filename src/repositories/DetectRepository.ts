@@ -1,5 +1,5 @@
 import Repository from '../repositories/Repository';
-import { Series } from '@/utils';
+import { SpectrumDO } from '@/utils';
 
 const resource = '/detects';
 export default {
@@ -10,7 +10,7 @@ export default {
       componentNames: componentNames
     });
   },
-  batchDetectComponents(targetSpectras: Array<Series>, compNames: string[]) {
+  batchDetectComponents(targetSpectras: Array<SpectrumDO>, compNames: string[]) {
     return Repository.post(`${resource}/batch`, {
       targetSpectras,
       componentNames: compNames

@@ -35,7 +35,8 @@
     </v-navigation-drawer>
 
     <v-content>
-        <router-view></router-view>
+      <v-alert :value="false" type="warning">test</v-alert>
+      <router-view></router-view>
     </v-content>
 
   </v-app>
