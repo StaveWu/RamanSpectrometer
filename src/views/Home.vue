@@ -52,7 +52,6 @@ import { remote } from "electron";
 import fs from "fs";
 import { SpectrumDO } from "@/utils";
 import { AxiosResponse } from "axios";
-import path from "path";
 import SpectraRepository from "../repositories/SpectraRepository";
 
 @Component({

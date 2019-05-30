@@ -10,7 +10,7 @@
           <v-container grid-list-md>
             <v-layout wrap>
               <v-flex xs12 sm6 md4>
-                <v-text-field v-model="editedItem.componentName" label="组分名" :disabled="disabled"></v-text-field>
+                <v-text-field v-model="editedItem.name" label="组分名" :disabled="disabled"></v-text-field>
               </v-flex>
               <v-flex xs12 sm6 md4>
                 <v-text-field v-model="editedItem.formula" label="化学式"></v-text-field>
@@ -23,7 +23,7 @@
               <v-flex>
                 <v-card flat>
                   <v-responsive :aspect-ratio="16/9">
-                    <spectrum :datas="[editedItem.series]"></spectrum>
+                    <spectrum :datas="editedItem.owned_spectra"></spectrum>
                   </v-responsive>
                 </v-card>
               </v-flex>
@@ -61,11 +61,11 @@
               :items="components"
               :search="search"
               expand="expand"
-              item-key="componentName"
+              item-key="name"
             >
               <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
-                  <td>{{ props.item.componentName }}</td>
+                  <td>{{ props.item.name }}</td>
                   <td class="text-xs-right">{{ props.item.formula }}</td>
                   <td class="text-xs-right">
                     <span v-if="props.item.state === 'offline'" class="offline">离线</span>
@@ -81,7 +81,7 @@
               <template slot="expand" slot-scope="props">
                 <v-card flat>
                   <v-responsive :aspect-ratio="16/9">
-                    <spectrum :datas="[props.item.series]"></spectrum>
+                    <spectrum :datas="props.item.owned_spectra"></spectrum>
                   </v-responsive>
                 </v-card>
               </template>
@@ -112,8 +112,8 @@ import path from "path";
 export default class PureLibrary extends Vue {
   dialog: boolean = false;
   editedIndex: number = -1;
-  editedItem: ComponentDO = new ComponentDO("", [new SpectrumDO("", [])], "");
-  defaultItem: ComponentDO = new ComponentDO("", [new SpectrumDO("", [])], "");
+  editedItem: ComponentDO = new ComponentDO("", [], "");
+  defaultItem: ComponentDO = new ComponentDO("", [], "");
 
   expand: boolean = false;
   headers: Array<any> = [
@@ -145,7 +145,7 @@ export default class PureLibrary extends Vue {
 
   editItem(item: ComponentDO) {
     this.editedIndex = this.components.indexOf(item);
-    this.editedItem = Object.create(item);
+    this.editedItem = item.clone();
     this.dialog = true;
   }
 
@@ -176,7 +176,7 @@ export default class PureLibrary extends Vue {
   close() {
     this.dialog = false;
     setTimeout(() => {
-      this.editedItem = Object.create(this.deleteItem);
+      this.editedItem = this.defaultItem.clone();
       this.editedIndex = -1;
     }, 300);
   }
@@ -190,10 +190,10 @@ export default class PureLibrary extends Vue {
           this.$set(
             this.components,
             this.editedIndex,
-            Object.create(this.editedItem)
+            this.editedItem.clone()
           );
         })
-        .catch((error: AxiosError) => {
+        .catch((error: any) => {
           console.log(error);
         });
     } else {
@@ -203,7 +203,7 @@ export default class PureLibrary extends Vue {
           this.editedItem.id = response.data.id;
           this.components.push(this.editedItem);
         })
-        .catch((error: AxiosError) => {
+        .catch((error: any) => {
           console.log(error);
         });
     }

@@ -6,7 +6,7 @@
 import Vue from 'vue';
 import * as Highcharts from 'highcharts';
 import { Component, Prop, Watch } from "vue-property-decorator";
-import {Series} from '@/utils'
+import {SpectrumDO} from '@/utils'
 
 @Component
 export default class Spectrum extends Vue {
@@ -16,9 +16,9 @@ export default class Spectrum extends Vue {
   title!: string;
 
   @Prop({
-    default: () => new Array<Series>()
+    default: () => new Array<SpectrumDO>()
   })
-  datas!: Array<Series>;
+  datas!: Array<SpectrumDO>;
 
   chart?: Highcharts.Chart;
   container: string;
@@ -89,8 +89,6 @@ export default class Spectrum extends Vue {
         name: this.datas[i].name,
         data: this.datas[i].data
       });
-      // this.chart.series[i].name = this.datas[i].name;
-      // this.chart.series[i].setData(this.datas[i].data);
     }
   }
 

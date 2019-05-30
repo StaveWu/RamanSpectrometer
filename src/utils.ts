@@ -8,6 +8,10 @@ export class SpectrumDO {
     return new SpectrumDO(json.name, json.data, json.id);
   }
 
+  toJson() {
+    return Object.assign({}, this);
+  }
+
   static fromFile(pathname: string, data: any) {
     let name = path.parse(pathname).name;
     let points = new Array<Array<number>>();
@@ -19,7 +23,7 @@ export class SpectrumDO {
         let s = line.split("\t");
         points.push([parseFloat(s[0]), parseFloat(s[1])]);
       });
-    return new SpectrumDO(name, data);
+    return new SpectrumDO(name, points);
   }
 
   commitTo(store: Store<any>) {
@@ -36,6 +40,18 @@ export class ComponentDO {
       owned_spectra.push(new SpectrumDO(spec.name, spec.data, spec.id));
     });
     return new ComponentDO(json.name, owned_spectra, json.formula, json.id);
+  }
+
+  toJson() {
+    return {
+      name: this.name,
+      formula: this.formula,
+      owned_spectra: this.owned_spectra.map((spec: SpectrumDO) => spec.toJson())
+    };
+  }
+
+  clone() {
+    return new ComponentDO(this.name, [...this.owned_spectra], this.formula, this.id);
   }
 }
 

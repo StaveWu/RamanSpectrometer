@@ -1,5 +1,5 @@
 import Repository from '../repositories/Repository';
-import {ComponentDO} from '@/utils';
+import {ComponentDO, SpectrumDO} from '@/utils';
 
 const resource = '/components';
 export default {
@@ -7,11 +7,7 @@ export default {
     return Repository.get(`${resource}`);
   },
   addComponent(comp: ComponentDO) {
-    return Repository.post(`${resource}`, {
-      name: comp.name,
-      formula: comp.formula,
-      owned_spectra: comp.owned_spectra
-    });
+    return Repository.post(`${resource}`, comp.toJson());
   },
   removeComponent(id: number) {
     return Repository.delete(`${resource}/${id}`);
@@ -24,10 +20,7 @@ export default {
     });
   },
   updateComponent(comp: ComponentDO) {
-    return Repository.patch(`${resource}/${comp.id}`, {
-      name: comp.name,
-      owned_spectra: comp.owned_spectra,
-      formula: comp.formula
-    });
+    console.log(comp.id);
+    return Repository.patch(`${resource}/${comp.id}`, comp.toJson());
   }
 }
