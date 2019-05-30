@@ -46,7 +46,7 @@
 import Vue from 'vue'
 import Component from 'vue-class-component';
 import Spectrum from '@/components/Spectrum.vue';
-import {Series, PureComponent} from '@/utils'
+import { SpectrumDO, ComponentDO } from '@/utils'
 import { AxiosResponse, AxiosError } from 'axios'
 import { Prop } from 'vue-property-decorator';
 import RepositoryFactory from '../repositories/RepositoryFactory';
