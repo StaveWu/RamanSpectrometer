@@ -1,5 +1,5 @@
 import Repository from '../repositories/Repository';
-import {ComponentDO, SpectrumDO} from '@/utils';
+import {ComponentDO} from '@/utils';
 
 const resource = '/components';
 export default {

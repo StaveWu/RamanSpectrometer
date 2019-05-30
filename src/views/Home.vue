@@ -1,7 +1,5 @@
 <template>
   <div>
-    <v-alert :value="alertShow" type="warning">{{ alertMessage }}</v-alert>
-
     <v-container>
       <v-layout wrap>
         <v-flex xs12 pb-2>
@@ -63,8 +61,6 @@ export default class Home extends Vue {
   onLoading: boolean = true;
   numRecentSpectra: number = 0;
   spectra: Array<SpectrumDO> = [];
-  alertMessage: string = "";
-  alertShow: boolean = false;
 
   constructor() {
     super();
@@ -79,9 +75,7 @@ export default class Home extends Vue {
           this.numRecentSpectra = this.spectra.length;
         }
       })
-      .catch((error: any) => {
-        this.alertMessage = `最近数据加载失败: ${error}`;
-        this.alertShow = true;
+      .catch(() => {
       })
       .then(() => {
         this.onLoading = false;

@@ -10,7 +10,7 @@
           <v-container grid-list-md>
             <v-layout wrap>
               <v-flex xs12 sm6 md4>
-                <v-text-field v-model="editedItem.name" label="组分名" :disabled="disabled"></v-text-field>
+                <v-text-field v-model="editedItem.name" label="组分名"></v-text-field>
               </v-flex>
               <v-flex xs12 sm6 md4>
                 <v-text-field v-model="editedItem.formula" label="化学式"></v-text-field>
@@ -102,7 +102,6 @@ import fs from "fs";
 import { ComponentDO, SpectrumDO } from "@/utils";
 import ComponentRepository from "../repositories/ComponentRepository";
 import { AxiosResponse, AxiosError } from "axios";
-import path from "path";
 
 @Component({
   components: {
@@ -117,7 +116,7 @@ export default class PureLibrary extends Vue {
 
   expand: boolean = false;
   headers: Array<any> = [
-    { text: "组分名", value: "componentName" },
+    { text: "组分名", value: "name" },
     { text: "化学式", value: "formula" },
     { text: "模型状态", value: "state" },
     { text: "操作", value: "actions", sortable: false }

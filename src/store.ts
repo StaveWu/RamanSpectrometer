@@ -8,7 +8,7 @@ export default new Vuex.Store({
   state: {
     spectraDeque: new Array<SpectrumDO>(),
     undoDeque: new Array<SpectrumDO>(),
-    dark: false
+    dark: false,
   },
   mutations: {
     enqueue(state, element: SpectrumDO) {
@@ -37,7 +37,7 @@ export default new Vuex.Store({
     },
     setDark(state, enable: boolean) {
       state.dark = enable;
-    }
+    },
   },
   actions: {
 
