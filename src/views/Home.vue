@@ -112,8 +112,7 @@ export default class Home extends Vue {
               this.$router.push("/preprocess");
             })
             .catch((error: any) => {
-              this.alertMessage = `${error}`;
-              this.alertShow = true;
+              console.log(error);
             });
         }
       });
