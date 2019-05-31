@@ -48,9 +48,11 @@ export default class DenoiseSetting extends Vue {
       this.params
     )
       .then((response: AxiosResponse) => {
+        let spec = SpectrumDO.fromJson(response.data);
+        spec.id = this.$store.state.targetSpectrum.id;
         this.$store.commit(
           "setCandidateSpectrum",
-          SpectrumDO.fromJson(response.data)
+          spec
         );
       })
       .catch((error: AxiosError) => {

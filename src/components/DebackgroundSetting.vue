@@ -4,7 +4,7 @@
       <v-flex text-xs-left md12 xs12 lg12>
         <v-combobox v-model="selected" :items="items" chips label="请选择基线校正算法"></v-combobox>
       </v-flex>
-      
+
       <v-flex text-xs-left md12 xs12 sm12 lg12>
         <air-pls v-if="isAIRPLS()" v-model="params"></air-pls>
       </v-flex>
@@ -18,51 +18,47 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component';
-import airPLS from '@/components/AIRPLS.vue'
-import { AxiosResponse, AxiosError } from 'axios';
-import { Algorithm, AIRPLS, POLYFIT } from '../common/Algorithm';
-import RepositoryFactory from '../repositories/RepositoryFactory';
-import store from '@/store';
-import { Series } from '@/utils';
-
-const DebackgroundRepository = RepositoryFactory.get('debackground');
+import Vue from "vue";
+import Component from "vue-class-component";
+import airPLS from "@/components/AIRPLS.vue";
+import { AxiosResponse, AxiosError } from "axios";
+import { Algorithm, AIRPLS, POLYFIT } from "../common/Algorithm";
+import DebackgroundRepository from "../repositories/DebackgroundRepository";
+import { SpectrumDO } from "@/utils";
 
 @Component({
   components: {
-    'air-pls': airPLS
+    "air-pls": airPLS
   }
 })
 export default class DebackgroundSetting extends Vue {
   selected: Algorithm = AIRPLS;
-  items: Array<Algorithm> = [
-    AIRPLS,
-    POLYFIT
-  ];
-  params: any = {lambda: 1e4};
-  
+  items: Array<Algorithm> = [AIRPLS, POLYFIT];
+  params: any = { lambda: 1e4 };
+
   isAIRPLS() {
     return this.selected === AIRPLS;
   }
 
   debackground() {
-    DebackgroundRepository.get(this.selected.value, store.getters.targetSpectra.data, 
-      store.getters.targetSpectra.data, this.params)
-    .then((response: AxiosResponse) => {
-      store.commit('enqueue', new Series(response.data.name, response.data.data));
-    })
-    .catch((error: AxiosError) => {
-      console.log(error);
-    });
+    DebackgroundRepository.get(
+      this.selected.value,
+      this.$store.state.targetSpectrum,
+      this.params
+    )
+      .then((response: AxiosResponse) => {
+        let spec = SpectrumDO.fromJson(response.data);
+        spec.id = this.$store.state.targetSpectrum.id;
+        this.$store.commit("setCandidateSpectrum", spec);
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
+      });
   }
 
   confirm() {
-    if (store.state.spectraDeque.length > 1) {
-      store.commit('dequeue');
-    }
+    this.$store.commit("candidateToTarget");
   }
-
 }
 </script>
 
