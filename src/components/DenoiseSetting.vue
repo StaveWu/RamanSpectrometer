@@ -22,13 +22,10 @@ import Vue from 'vue'
 import SGFilter from '@/components/SGFilter.vue'
 import Component from 'vue-class-component';
 import { AxiosResponse, AxiosError } from 'axios';
-import store from '@/store';
-import { Series } from '@/utils';
-import RepositoryFactory from '@/repositories/RepositoryFactory';
-import { Algorithm, SG, DAE, WAVELET } from '../common/Algorithm'
-import { Watch } from 'vue-property-decorator';
+import { SpectrumDO } from '@/utils';
+import DenoiseRepository from '@/repositories/DenoiseRepository';
+import { Algorithm, SG, DAE, WAVELET } from '../common/Algorithm';
 
-const DenoiseRepository = RepositoryFactory.get('denoise');
 
 @Component({
   components: {
@@ -44,31 +41,23 @@ export default class DenoiseSetting extends Vue {
   ];
 
   params: any = {order: 3, windowLength: 9};
-
-  @Watch('params')
-  changed() {
-    console.log(this.params);
-  }
   
   isSG() {
     return this.selected === SG;
   }
   
   denoise() {
-    DenoiseRepository.get(this.selected.value, store.getters.targetSpectra.name, 
-      store.getters.targetSpectra.data, this.params)
-    .then((response: AxiosResponse) => {
-      store.commit('enqueue', new Series(response.data.name, response.data.data));
-    })
-    .catch((error: AxiosError) => {
-      console.log(error);
-    });
+    DenoiseRepository.get(this.selected.value, this.$store.state.targetSpectrum, this.params)
+      .then((response: AxiosResponse) => {
+        this.$store.commit('setCandidateSpectrum', SpectrumDO.fromJson(response.data));
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
+      });
   }
 
   confirm() {
-    if (store.state.spectraDeque.length > 1) {
-      store.commit('dequeue');
-    }
+    this.$store.commit('candidateToTarget');
   }
 
 }

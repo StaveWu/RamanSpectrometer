@@ -79,7 +79,7 @@ export default class PreprocessView extends Vue {
   }
 
   get spectraDeque() {
-    return this.$store.state.spectraDeque;
+    return this.$store.getters.spectra;
   }
 
   undo() {

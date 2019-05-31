@@ -83,8 +83,7 @@ export default class Home extends Vue {
   }
 
   openSpectrum(i: number) {
-    this.$store.commit('clear');
-    this.spectra[i].commitTo(this.$store);
+    this.$store.commit('setTargetSpectrum', this.spectra[i]);
   }
 
   importSpectrumFromFile() {
@@ -107,8 +106,7 @@ export default class Home extends Vue {
               spec.id = response.data.id;
               // data should be posted before preprocess page created, since
               // this page need data to construct.
-              this.$store.commit('clear');
-              spec.commitTo(this.$store);
+              this.$store.commit('setTargetSpectrum', spec);
               this.$router.push("/preprocess");
             })
             .catch((error: any) => {

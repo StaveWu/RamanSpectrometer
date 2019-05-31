@@ -1,7 +1,8 @@
-import {Store} from 'vuex';
 import path from 'path';
 
 export class SpectrumDO {
+  public static EMPTY: SpectrumDO = new SpectrumDO('', []);
+
   constructor(public name:string, public data:number[][], public id?: number) {}
 
   static fromJson(json: any): SpectrumDO {
@@ -26,8 +27,8 @@ export class SpectrumDO {
     return new SpectrumDO(name, points);
   }
 
-  commitTo(store: Store<any>) {
-    store.commit('enqueue', this);
+  clone(): SpectrumDO {
+    return new SpectrumDO(this.name, this.data, this.id);
   }
 }
 
