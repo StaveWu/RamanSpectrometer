@@ -47,14 +47,23 @@ export class ComponentDO {
     public ownedSpectra: Array<SpectrumDO>,
     public formula?: string,
     public state?: string,
-    public id?: number) {}
+    public id?: number) {
+      if (!this.state) {
+        this.state = 'offline';
+      }
+    }
 
     toDTO() {
       return new ComponentDTO(this.name, this.ownedSpectra, this.formula, this.id);
     }
 
-    fromDTO(comp: ComponentDTO, model: ModelDTO) {
-
+    static fromDTO(comp: ComponentDTO, model?: ModelDTO): ComponentDO {
+      let res = new ComponentDO(comp.name, comp.ownedSpectra, comp.formula);
+      res.id = comp.id;
+      if (model) {
+        res.state = model.state;
+      }
+      return res;
     }
 
     clone(): ComponentDO {
@@ -63,7 +72,10 @@ export class ComponentDO {
 }
 
 export class ComponentDTO {
-  constructor(public name: string, public ownedSpectra: Array<SpectrumDO>, public formula?: string, public id?: number) {}
+  constructor(public name: string, 
+    public ownedSpectra: Array<SpectrumDO>, 
+    public formula?: string, 
+    public id?: number) {}
 
   static fromJson(json: any): ComponentDTO {
     let ownedSpectra: Array<SpectrumDO> = [];

@@ -40,9 +40,17 @@ export default {
         });
 
         let comps: Array<ComponentDO> = [];
-        // TODO: assemble comps
+        // assemble comps
+        compdtos.forEach(compdto => {
+          let finded = modeldtos.find(modeldto => modeldto.id === compdto.id);
+          if (finded) {
+            comps.push(ComponentDO.fromDTO(compdto, finded));
+          } else {
+            comps.push(ComponentDO.fromDTO(compdto));
+          }
+        })
         return comps;
-      }))
+      }));
   },
   addComponent(comp: ComponentDO) {
     return addComponentDTO(comp.toDTO())

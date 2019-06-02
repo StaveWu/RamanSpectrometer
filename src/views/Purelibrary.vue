@@ -23,7 +23,7 @@
               <v-flex>
                 <v-card flat>
                   <v-responsive :aspect-ratio="16/9">
-                    <spectrum :datas="editedItem.owned_spectra"></spectrum>
+                    <spectrum :datas="editedItem.ownedSpectra"></spectrum>
                   </v-responsive>
                 </v-card>
               </v-flex>
@@ -81,7 +81,7 @@
               <template slot="expand" slot-scope="props">
                 <v-card flat>
                   <v-responsive :aspect-ratio="16/9">
-                    <spectrum :datas="props.item.owned_spectra"></spectrum>
+                    <spectrum :datas="props.item.ownedSpectra"></spectrum>
                   </v-responsive>
                 </v-card>
               </template>
@@ -111,8 +111,8 @@ import { AxiosResponse, AxiosError } from "axios";
 export default class PureLibrary extends Vue {
   dialog: boolean = false;
   editedIndex: number = -1;
-  editedItem: ComponentDO = new ComponentDO("", [], "");
-  defaultItem: ComponentDO = new ComponentDO("", [], "");
+  editedItem: ComponentDO = new ComponentDO("", [], "", 'offline');
+  defaultItem: ComponentDO = new ComponentDO("", [], "", 'offline');
 
   expand: boolean = false;
   headers: Array<any> = [
@@ -129,7 +129,7 @@ export default class PureLibrary extends Vue {
     super();
     ComponentRepository.loadComponents()
       .then((comps: Array<ComponentDO>) => {
-        this.components = comps;
+        comps.forEach(comp => this.components.push(comp));
       })
       .catch((error: AxiosError) => {
         console.log(error);
@@ -214,6 +214,7 @@ export default class PureLibrary extends Vue {
     } else {
       SpectrumDO.fromFile(selectedFilePaths[0])
         .then(spec => {
+          console.log('here');
           this.editedItem.ownedSpectra.push(<SpectrumDO>spec);
         })
         .catch(err =>{

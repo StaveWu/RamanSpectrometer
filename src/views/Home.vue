@@ -97,7 +97,6 @@ export default class Home extends Vue {
       // if select many, we only choose the first one
        SpectrumDO.fromFile(selectedFilePaths[0])
            .then(spec => {
-             console.log(spec);
               SpectraRepository.addSpectrum(<SpectrumDO>spec)
                 .then(() => {
                   // data should be posted before preprocess page created, since
