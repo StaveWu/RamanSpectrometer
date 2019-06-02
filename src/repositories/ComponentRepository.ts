@@ -22,5 +22,14 @@ export default {
   updateComponent(comp: ComponentDO) {
     console.log(comp.id);
     return Repository.patch(`${resource}/${comp.id}`, comp.toJson());
+  },
+  createModel(id: number) {
+    return Repository.post(`${resource}/${id}/model`);
+  },
+  tuneModel(id: number) {
+    return Repository.put(`${resource}/${id}/model`);
+  },
+  getModels() {
+    return Repository.get('models');
   }
 }

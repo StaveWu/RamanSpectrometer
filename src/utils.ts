@@ -33,6 +33,50 @@ export class SpectrumDO {
 }
 
 export class ComponentDO {
+  private comp: ComponentDTO;
+  private model: ModelDTO;
+  constructor(comp: ComponentDTO, model: ModelDTO) {
+    if (comp.id !== model.id) {
+      throw Error();
+    }
+    this.comp = comp;
+    this.model = model;
+  }
+
+  get id() {
+    return this.comp.id;
+  }
+
+  get state() {
+    return this.model.state;
+  }
+
+  get name() {
+    return this.comp.name;
+  }
+
+  set name(value: string) {
+    this.comp.name = name;
+  }
+
+  get ownedSpectra() {
+    return this.comp.ownedSpectra;
+  }
+
+  set ownedSpectra(spectra: number[][][]) {
+    this.comp.ownedSpectra = spectra;
+  }
+
+  get formula() {
+    return this.comp.formula;
+  }
+
+  set formula(value: string) {
+    this.comp.formula = value;
+  }
+}
+
+export class ComponentDO {
   constructor(public name: string, public owned_spectra: Array<SpectrumDO>, public formula?: string, public id?: number) {}
 
   static fromJson(json: any): ComponentDO {
@@ -54,6 +98,16 @@ export class ComponentDO {
   clone() {
     return new ComponentDO(this.name, [...this.owned_spectra], this.formula, this.id);
   }
+}
+
+export class ModelDTO {
+  constructor(readonly id: number, public state: string) {}
+
+  static fromJson(json: any) {
+
+  }
+
+  toJson() {}
 }
 
 export interface Pipeline {

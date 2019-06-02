@@ -101,6 +101,7 @@ import { remote } from "electron";
 import fs from "fs";
 import { ComponentDO, SpectrumDO } from "@/utils";
 import ComponentRepository from "../repositories/ComponentRepository";
+import ComponentModelRepository from "../repositories/ComponentModelRepository";
 import { AxiosResponse, AxiosError } from "axios";
 
 @Component({
@@ -136,6 +137,10 @@ export default class PureLibrary extends Vue {
       .catch((error: AxiosError) => {
         console.log(error);
       });
+    ComponentModelRepository.getModels()
+      .then((response: AxiosResponse) => {
+        
+      })
   }
 
   newItem() {
