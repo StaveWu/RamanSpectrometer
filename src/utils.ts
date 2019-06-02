@@ -33,81 +33,56 @@ export class SpectrumDO {
 }
 
 export class ComponentDO {
-  private comp: ComponentDTO;
-  private model: ModelDTO;
-  constructor(comp: ComponentDTO, model: ModelDTO) {
-    if (comp.id !== model.id) {
-      throw Error();
+  constructor(
+    public name: string, 
+    public ownedSpectra: Array<SpectrumDO>,
+    public formula?: string,
+    public state?: string,
+    public id?: number) {}
+
+    toDTO() {
+      return new ComponentDTO(this.name, this.ownedSpectra, this.formula, this.id);
     }
-    this.comp = comp;
-    this.model = model;
-  }
 
-  get id() {
-    return this.comp.id;
-  }
+    fromDTO(comp: ComponentDTO, model: ModelDTO) {
 
-  get state() {
-    return this.model.state;
-  }
+    }
 
-  get name() {
-    return this.comp.name;
-  }
-
-  set name(value: string) {
-    this.comp.name = name;
-  }
-
-  get ownedSpectra() {
-    return this.comp.ownedSpectra;
-  }
-
-  set ownedSpectra(spectra: number[][][]) {
-    this.comp.ownedSpectra = spectra;
-  }
-
-  get formula() {
-    return this.comp.formula;
-  }
-
-  set formula(value: string) {
-    this.comp.formula = value;
-  }
+    clone(): ComponentDO {
+      return new ComponentDO(this.name, [...this.ownedSpectra], this.formula, this.state, this.id);
+    }
 }
 
-export class ComponentDO {
-  constructor(public name: string, public owned_spectra: Array<SpectrumDO>, public formula?: string, public id?: number) {}
+export class ComponentDTO {
+  constructor(public name: string, public ownedSpectra: Array<SpectrumDO>, public formula?: string, public id?: number) {}
 
-  static fromJson(json: any): ComponentDO {
-    let owned_spectra: Array<SpectrumDO> = [];
+  static fromJson(json: any): ComponentDTO {
+    let ownedSpectra: Array<SpectrumDO> = [];
     json.owned_spectra.forEach((spec: any) => {
-      owned_spectra.push(new SpectrumDO(spec.name, spec.data, spec.id));
+      ownedSpectra.push(new SpectrumDO(spec.name, spec.data, spec.id));
     });
-    return new ComponentDO(json.name, owned_spectra, json.formula, json.id);
+    return new ComponentDTO(json.name, ownedSpectra, json.formula, json.id);
   }
 
   toJson() {
     return {
       name: this.name,
       formula: this.formula,
-      owned_spectra: this.owned_spectra.map((spec: SpectrumDO) => spec.toJson())
+      owned_spectra: this.ownedSpectra.map((spec: SpectrumDO) => spec.toJson())
     };
   }
 
   clone() {
-    return new ComponentDO(this.name, [...this.owned_spectra], this.formula, this.id);
+    return new ComponentDTO(this.name, [...this.ownedSpectra], this.formula, this.id);
   }
 }
 
 export class ModelDTO {
   constructor(readonly id: number, public state: string) {}
 
-  static fromJson(json: any) {
-
+  static fromJson(json: any): ModelDTO {
+    return new ModelDTO(json.id, json.state);
   }
-
-  toJson() {}
 }
 
 export interface Pipeline {

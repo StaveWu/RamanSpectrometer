@@ -101,7 +101,6 @@ import { remote } from "electron";
 import fs from "fs";
 import { ComponentDO, SpectrumDO } from "@/utils";
 import ComponentRepository from "../repositories/ComponentRepository";
-import ComponentModelRepository from "../repositories/ComponentModelRepository";
 import { AxiosResponse, AxiosError } from "axios";
 
 @Component({
@@ -129,18 +128,12 @@ export default class PureLibrary extends Vue {
   constructor() {
     super();
     ComponentRepository.loadComponents()
-      .then((response: AxiosResponse) => {
-        response.data.components.forEach((comp: any) => {
-          this.components.push(ComponentDO.fromJson(comp));
-        });
+      .then((comps: Array<ComponentDO>) => {
+        this.components = comps;
       })
       .catch((error: AxiosError) => {
         console.log(error);
       });
-    ComponentModelRepository.getModels()
-      .then((response: AxiosResponse) => {
-        
-      })
   }
 
   newItem() {
@@ -190,7 +183,6 @@ export default class PureLibrary extends Vue {
       // 更新组分
       ComponentRepository.updateComponent(this.editedItem)
         .then((response: AxiosResponse) => {
-          this.editedItem.id = response.data.id;
           this.$set(
             this.components,
             this.editedIndex,
@@ -203,8 +195,7 @@ export default class PureLibrary extends Vue {
     } else {
       // 新建组分
       ComponentRepository.addComponent(this.editedItem)
-        .then((response: AxiosResponse) => {
-          this.editedItem.id = response.data.id;
+        .then((comp) => {
           this.components.push(this.editedItem);
         })
         .catch((error: any) => {
@@ -225,7 +216,7 @@ export default class PureLibrary extends Vue {
         if (err) {
           return console.error(err);
         } else {
-          this.editedItem.owned_spectra.push(SpectrumDO.fromFile(selectedFilePaths[0], data));
+          this.editedItem.ownedSpectra.push(SpectrumDO.fromFile(selectedFilePaths[0], data));
         }
       });
     }
