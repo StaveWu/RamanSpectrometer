@@ -12,7 +12,10 @@ export default {
   },
 
   addSpectrum(spec: SpectrumDO) {
-    return Repository.post(`${resource}`, spec.toJson());
+    return Repository.post(`${resource}`, spec.toJson())
+      .then(resp => {
+        spec.id = resp.data.id;
+      });
   },
 
   tagSpectrum(targetSpectraName: string, componentName: string, probability: number) {

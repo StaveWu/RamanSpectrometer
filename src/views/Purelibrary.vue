@@ -212,13 +212,13 @@ export default class PureLibrary extends Vue {
     if (selectedFilePaths === undefined) {
       return;
     } else {
-      fs.readFile(selectedFilePaths[0], (err, data) => {
-        if (err) {
-          return console.error(err);
-        } else {
-          this.editedItem.ownedSpectra.push(SpectrumDO.fromFile(selectedFilePaths[0], data));
-        }
-      });
+      SpectrumDO.fromFile(selectedFilePaths[0])
+        .then(spec => {
+          this.editedItem.ownedSpectra.push(<SpectrumDO>spec);
+        })
+        .catch(err =>{
+          console.log(err);
+        })
     }
   }
 }

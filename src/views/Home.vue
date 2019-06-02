@@ -95,25 +95,23 @@ export default class Home extends Vue {
       return;
     } else {
       // if select many, we only choose the first one
-      fs.readFile(selectedFilePaths[0], (err, data) => {
-        if (err) {
-          return console.error(err);
-        } else {
-          let spec = SpectrumDO.fromFile(selectedFilePaths[0], data);
-
-          SpectraRepository.addSpectrum(spec)
-            .then((response: AxiosResponse) => {
-              spec.id = response.data.id;
-              // data should be posted before preprocess page created, since
-              // this page need data to construct.
-              this.$store.commit('setTargetSpectrum', spec);
-              this.$router.push("/preprocess");
-            })
-            .catch((error: any) => {
+       SpectrumDO.fromFile(selectedFilePaths[0])
+           .then(spec => {
+             console.log(spec);
+              SpectraRepository.addSpectrum(<SpectrumDO>spec)
+                .then(() => {
+                  // data should be posted before preprocess page created, since
+                  // this page need data to construct.
+                  this.$store.commit('setTargetSpectrum', spec);
+                  this.$router.push("/preprocess");
+                })
+                .catch(err => {
+                  console.log(err);
+                })
+           })
+           .catch((error: any) => {
               console.log(error);
             });
-        }
-      });
     }
   }
 }

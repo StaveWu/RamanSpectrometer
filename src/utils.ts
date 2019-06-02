@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 
 export class SpectrumDO {
   public static EMPTY: SpectrumDO = new SpectrumDO('', []);
@@ -13,18 +14,26 @@ export class SpectrumDO {
     return Object.assign({}, this);
   }
 
-  static fromFile(pathname: string, data: any) {
-    let name = path.parse(pathname).name;
-    let points = new Array<Array<number>>();
-    data
-      .toString()
-      .trim()
-      .split("\n")
-      .map((line: any) => {
-        let s = line.split("\t");
-        points.push([parseFloat(s[0]), parseFloat(s[1])]);
-      });
-    return new SpectrumDO(name, points);
+  static fromFile(pathname: string) {
+    return new Promise((resolve, reject) => {
+      fs.readFile(pathname, (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          let name = path.parse(pathname).name;
+          let points = new Array<Array<number>>();
+          data
+            .toString()
+            .trim()
+            .split("\n")
+            .map((line: any) => {
+              let s = line.split("\t");
+              points.push([parseFloat(s[0]), parseFloat(s[1])]);
+            });
+          resolve(new SpectrumDO(name, points));
+        }
+      })
+    });
   }
 
   clone(): SpectrumDO {
