@@ -100,7 +100,7 @@ import Component from "vue-class-component";
 import Spectrum from "@/components/Spectrum.vue";
 import { remote } from "electron";
 import fs from "fs";
-import { ComponentDO, SpectrumDO } from "@/utils";
+import { ComponentDO, SpectrumDO, ModelDTO } from "@/utils";
 import ComponentRepository from "../repositories/ComponentRepository";
 import { AxiosResponse, AxiosError } from "axios";
 
@@ -125,6 +125,7 @@ export default class PureLibrary extends Vue {
   components: Array<ComponentDO> = [];
 
   search: string = "";
+  timer?: any;
 
   constructor() {
     super();
@@ -135,6 +136,30 @@ export default class PureLibrary extends Vue {
       .catch((error: AxiosError) => {
         console.log(error);
       });
+  }
+
+  mounted() {
+    this.timer = window.setInterval(() => {
+      ComponentRepository.getModels()
+        .then(resp => {
+          let modeldtos: Array<ModelDTO> = [];
+          resp.data.models.forEach((model: any) => {
+            modeldtos.push(ModelDTO.fromJson(model));
+          });
+          this.components.forEach(comp => {
+            let finded = modeldtos.find(modeldto => modeldto.id === comp.id);
+            if (finded) {
+              comp.state = finded.state;
+            }
+          })
+        })
+    }, 5000);
+  }
+
+  beforeDestroy() {
+    if (this.timer) {
+      window.clearInterval(this.timer);
+    }
   }
 
   newItem() {
@@ -229,7 +254,6 @@ export default class PureLibrary extends Vue {
     } else {
       SpectrumDO.fromFile(selectedFilePaths[0])
         .then(spec => {
-          console.log('here');
           this.editedItem.ownedSpectra.push(<SpectrumDO>spec);
         })
         .catch(err =>{
