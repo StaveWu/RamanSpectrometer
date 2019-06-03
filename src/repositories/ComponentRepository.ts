@@ -4,12 +4,16 @@ import axios from 'axios';
 
 const resource = '/components';
 
-function loadComponentDTOs() {
-  return Repository.get(`${resource}`);
-}
-
 function loadModelDTOs() {
   return Repository.get('models');
+}
+
+function deleteModelDTOs(id: number) {
+  return Repository.delete(`models/${id}`);
+}
+
+function loadComponentDTOs() {
+  return Repository.get(`${resource}`);
 }
 
 function addComponentDTO(compdto: ComponentDTO) {
@@ -60,7 +64,7 @@ export default {
       });
   },
   removeComponent(id: number) {
-    return deleteComponentDTO(id);
+    return axios.all([deleteComponentDTO(id), deleteModelDTOs(id)]);
   },
   updateComponent(comp: ComponentDO) {
     return updateComponentDTO(comp.toDTO());

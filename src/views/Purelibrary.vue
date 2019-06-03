@@ -73,8 +73,9 @@
                     <span v-if="props.item.state === 'busy'" class="busy">忙碌</span>
                   </td>
                   <td class="justify-center layout px-0">
-                    <v-icon small class="mr-2" @click="editItem(props.item)">edit</v-icon>
-                    <v-icon small @click="deleteItem(props.item)">delete</v-icon>
+                    <v-icon class="mr-2" @click="createModel(props.item)">update</v-icon>
+                    <v-icon class="mr-2" @click="editItem(props.item)">edit</v-icon>
+                    <v-icon @click="deleteItem(props.item)">delete</v-icon>
                   </td>
                 </tr>
               </template>
@@ -153,7 +154,7 @@ export default class PureLibrary extends Vue {
         return;
       }
       ComponentRepository.removeComponent(item.id)
-        .then((response: AxiosResponse) => {
+        .then(() => {
           this.components.splice(index, 1);
         })
         .catch((error: AxiosError) => {
@@ -162,12 +163,26 @@ export default class PureLibrary extends Vue {
     }
   }
 
-  get dialogTitle() {
-    return this.editedIndex == -1 ? "新建组分" : "编辑组分";
+  createModel(item: ComponentDO) {
+    if (item.state !== 'offline') {
+      console.log('item model is exist');
+      return;
+    }
+    if (!item.id) {
+      console.log('runtime error: item.id is not init yet');
+      return;
+    }
+    ComponentRepository.createModel(item.id)
+      .then(() => {
+        console.log('waiting for created');
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
-  get disabled() {
-    return this.editedIndex == -1 ? false : true;
+  get dialogTitle() {
+    return this.editedIndex == -1 ? "新建组分" : "编辑组分";
   }
 
   close() {
