@@ -22,7 +22,7 @@ import Vue from "vue";
 import Component from "vue-class-component";
 import airPLS from "@/components/AIRPLS.vue";
 import { AxiosResponse, AxiosError } from "axios";
-import { Algorithm, AIRPLS, POLYFIT } from "../common/Algorithm";
+import { Algorithm, AIRPLS } from "../common/Algorithm";
 import DebackgroundRepository from "../repositories/DebackgroundRepository";
 import { SpectrumDO } from "@/utils";
 
@@ -33,7 +33,7 @@ import { SpectrumDO } from "@/utils";
 })
 export default class DebackgroundSetting extends Vue {
   selected: Algorithm = AIRPLS;
-  items: Array<Algorithm> = [AIRPLS, POLYFIT];
+  items: Array<Algorithm> = [AIRPLS];
   params: any = { lambda: 1e4 };
 
   isAIRPLS() {
@@ -46,9 +46,7 @@ export default class DebackgroundSetting extends Vue {
       this.$store.state.targetSpectrum,
       this.params
     )
-      .then((response: AxiosResponse) => {
-        let spec = SpectrumDO.fromJson(response.data);
-        spec.id = this.$store.state.targetSpectrum.id;
+      .then((spec: SpectrumDO) => {
         this.$store.commit("setCandidateSpectrum", spec);
       })
       .catch((error: AxiosError) => {

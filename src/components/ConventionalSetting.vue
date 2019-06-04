@@ -14,40 +14,34 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component';
-import { AxiosResponse, AxiosError } from 'axios'
-import store from '../store'
-import { Series } from '../utils';
-import { Algorithm, MINMAX_SCALE, SCALE } from '../common/Algorithm'
-import RepositoryFactory from '@/repositories/RepositoryFactory';
-
-const ConventionalRepository = RepositoryFactory.get('conventional');
+import Vue from "vue";
+import Component from "vue-class-component";
+import { SpectrumDO } from "../utils";
+import { Algorithm, MINMAX_SCALE, SCALE } from "../common/Algorithm";
+import ConventionalRepository from "@/repositories/ConventionalRepository";
 
 @Component
 export default class ConventionalSetting extends Vue {
   selected: Algorithm = MINMAX_SCALE;
-  items: Array<Algorithm> = [
-    MINMAX_SCALE,
-    SCALE
-  ];
+  items: Array<Algorithm> = [MINMAX_SCALE, SCALE];
   parameters?: any;
 
   preprocess() {
-    ConventionalRepository.get(this.selected.value, store.getters.targetSpectra.name, 
-      store.getters.targetSpectra.data, this.parameters)
-    .then((response: AxiosResponse) => {
-      store.commit('enqueue', new Series(response.data.name, response.data.data));
-    })
-    .catch((error: AxiosError) => {
-      console.log(error);
-    });
+    ConventionalRepository.get(
+      this.selected.value,
+      this.$store.state.targetSpectrum,
+      this.parameters
+    )
+      .then((spec: SpectrumDO) => {
+        this.$store.commit("setCandidateSpectrum", spec);
+      })
+      .catch((error: any) => {
+        console.log(error);
+      });
   }
 
   confirm() {
-    if (store.state.spectraDeque.length > 1) {
-      store.commit('dequeue');
-    }
+    this.$store.commit("candidateToTarget");
   }
 }
 </script>

@@ -24,7 +24,7 @@ import Component from "vue-class-component";
 import { AxiosResponse, AxiosError } from "axios";
 import { SpectrumDO } from "@/utils";
 import DenoiseRepository from "@/repositories/DenoiseRepository";
-import { Algorithm, SG, DAE, WAVELET } from "../common/Algorithm";
+import { Algorithm, SG, DAE } from "../common/Algorithm";
 
 @Component({
   components: {
@@ -33,7 +33,7 @@ import { Algorithm, SG, DAE, WAVELET } from "../common/Algorithm";
 })
 export default class DenoiseSetting extends Vue {
   selected: Algorithm = SG;
-  items: Array<Algorithm> = [SG, WAVELET, DAE];
+  items: Array<Algorithm> = [SG, DAE];
 
   params: any = { order: 3, windowLength: 9 };
 
@@ -47,9 +47,7 @@ export default class DenoiseSetting extends Vue {
       this.$store.state.targetSpectrum,
       this.params
     )
-      .then((response: AxiosResponse) => {
-        let spec = SpectrumDO.fromJson(response.data);
-        spec.id = this.$store.state.targetSpectrum.id;
+      .then((spec: SpectrumDO) => {
         this.$store.commit(
           "setCandidateSpectrum",
           spec
