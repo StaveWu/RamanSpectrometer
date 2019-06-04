@@ -106,6 +106,18 @@ export class ModelDTO {
   }
 }
 
+export class DetectResult {
+  constructor(readonly id: number, readonly probability: number) {}
+
+  static fromJson(json: any): DetectResult {
+    return new DetectResult(json.id, json.probability);
+  }
+
+  toJson() {
+    return Object.assign({}, this);
+  }
+}
+
 export interface Pipeline {
   method: string,
   params: any,

@@ -1,5 +1,5 @@
 import Repository from '../repositories/Repository';
-import { SpectrumDO } from '@/utils';
+import { SpectrumDO, DetectResult } from '@/utils';
 
 const resource = '/spectra';
 export default {
@@ -18,10 +18,25 @@ export default {
       });
   },
 
-  tagSpectrum(targetSpectraName: string, componentName: string, probability: number) {
-    return Repository.patch(`${resource}/${targetSpectraName}`, {
-      componentName: componentName,
-      probability: probability
+  tagSpectrum(id: number, detectResult: DetectResult) {
+    return Repository.patch(`${resource}/${id}`, {
+      compId: detectResult.id,
+      probability: detectResult.probability
     });
-  }
+  },
+
+  detectComponents(targetSpec: SpectrumDO, compIds: number[]) {
+    return Repository.post(`${resource}/${targetSpec.id}/components`, {
+        name: targetSpec.name,
+        data: targetSpec.data,
+        compIds: compIds
+      })
+      .then(resp => {
+        let results: DetectResult[] = [];
+        resp.data.results.forEach((res: any) => {
+          results.push(DetectResult.fromJson(res));
+        });
+        return results;
+      });
+  },
 }
