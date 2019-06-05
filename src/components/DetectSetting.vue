@@ -65,7 +65,7 @@ interface ComponentRowObject {
   id: number;
   name: string;
   formula: string | undefined;
-  probability: number;
+  probability: string;
   spectraCompare: SpectrumDO[];
 }
 
@@ -124,7 +124,7 @@ export default class DetectSetting extends Vue {
             id: res.id,
             name: comp.name,
             formula: comp.formula,
-            probability: res.probability,
+            probability: res.probability.toFixed(2),
             spectraCompare: [this.$store.state.targetSpectrum, ...comp.ownedSpectra]
           });
         }
@@ -148,7 +148,7 @@ export default class DetectSetting extends Vue {
   }
 
   tagSpectrum(comp: ComponentRowObject) {
-    let fliped = comp.probability > 0.5 ? 0 : 1;
+    let fliped = parseFloat(comp.probability) > 0.5 ? 0 : 1;
     SpectraRepository.tagSpectrum(
       this.$store.state.targetSpectrum.id,
       new DetectResult(comp.id, fliped)

@@ -20,7 +20,7 @@ export default {
 
   tagSpectrum(id: number, detectResult: DetectResult) {
     return Repository.patch(`${resource}/${id}`, {
-      compId: detectResult.id,
+      id: detectResult.id,
       probability: detectResult.probability
     });
   },
