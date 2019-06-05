@@ -9,11 +9,15 @@
         <v-btn color="primary" @click="detect()">识别</v-btn>
       </v-flex>
 
-      <v-flex pb-2 xs12 v-if="isDetected">
+      <v-flex pt-3 pb-2 xs12 v-if="onLoading|isDetected">
         <h3>识别结果</h3>
       </v-flex>
 
-      <v-flex v-if="isDetected">
+      <v-flex pt-3 xs12 md12 lg12 text-xs-center v-if="onLoading">
+        <v-progress-circular indeterminate color="primary"></v-progress-circular>
+      </v-flex>
+
+      <v-flex v-if="isDetected" xs12 md12 lg12>
         <v-card>
           <v-data-table
             :headers="headers"
@@ -24,18 +28,19 @@
             <template slot="items" slot-scope="props">
               <tr @click="props.expanded = !props.expanded">
                 <td>{{ props.item.name }}</td>
+                <td class="text-xs-right">{{ props.item.formula }}</td>
                 <td class="text-xs-right">{{ props.item.probability }}</td>
               </tr>
             </template>
             <template slot="expand" slot-scope="props">
               <v-card flat>
                 <v-responsive :aspect-ratio="16/9">
-                  <spectrum :datas="props.item.ownedSpectra"></spectrum>
+                  <spectrum :datas="props.item.spectraCompare"></spectrum>
                 </v-responsive>
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn outline color="warning" @click="tagSpectrum(props.item.comp)">预测错误?</v-btn>
+                  <v-btn outline color="warning" @click="tagSpectrum(props.item)">预测错误?</v-btn>
                 </v-card-actions>
               </v-card>
             </template>
@@ -57,11 +62,11 @@ import ComponentRepository from "../repositories/ComponentRepository";
 import SpectraRepository from "../repositories/SpectraRepository";
 
 interface ComponentRowObject {
-  id: number | undefined;
+  id: number;
   name: string;
   formula: string | undefined;
   probability: number;
-  ownedSpectra: SpectrumDO[];
+  spectraCompare: SpectrumDO[];
 }
 
 @Component({
@@ -74,6 +79,7 @@ export default class DetectSetting extends Vue {
   componentsToDetect: Array<string> = [];
   isDetected: boolean = false;
   components: Array<ComponentDO> = []; // use for caching component data
+  onLoading: boolean = false;
 
   expand: boolean = false;
   headers: Array<any> = [
@@ -92,7 +98,7 @@ export default class DetectSetting extends Vue {
           .filter(comp => comp.state === "online")
           .map(comp => this.componentsToDetect.push(comp.name));
         // cache components data
-        this.components = comps;
+        comps.forEach(comp => this.components.push(comp));
       })
       .catch((error: AxiosError) => {
         console.log(error);
@@ -100,34 +106,40 @@ export default class DetectSetting extends Vue {
   }
 
   detect() {
+    this.results.splice(0, this.results.length);
+    this.onLoading = true;
+    this.isDetected = false;
+
     SpectraRepository.detectComponents(
       this.$store.state.targetSpectrum,
       this.getSelectIds()
     )
       .then((results: DetectResult[]) => {
         for (let res of results) {
-          let comp = this.components.find(comp => comp.id == res.id);
+          let comp = this.components.find(comp => comp.id === res.id);
           if (!comp) {
             continue;
           }
           this.results.push({
-            id: comp.id,
+            id: res.id,
             name: comp.name,
             formula: comp.formula,
             probability: res.probability,
-            ownedSpectra: comp.ownedSpectra
+            spectraCompare: [this.$store.state.targetSpectrum, ...comp.ownedSpectra]
           });
         }
+        this.onLoading = false;
         this.isDetected = true;
       })
       .catch((error: Error) => {
         console.log(error);
+        this.onLoading = false;
       });
   }
   private getSelectIds() {
     let selectIds: number[] = [];
     this.selected.forEach(name => {
-      let finded = this.components.find(comp => comp.name == name);
+      let finded = this.components.find(comp => comp.name === name);
       if (finded && finded.id) {
         selectIds.push(finded.id);
       }
