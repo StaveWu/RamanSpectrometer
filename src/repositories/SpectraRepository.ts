@@ -1,5 +1,5 @@
 import Repository from '../repositories/Repository';
-import { SpectrumDO, DetectResult } from '@/utils';
+import { SpectrumDO, DetectResult, ComponentDO } from '@/utils';
 
 const resource = '/spectra';
 export default {
@@ -39,4 +39,13 @@ export default {
         return results;
       });
   },
+
+  batchDetectComponents(targetSpectra: SpectrumDO[], components: ComponentDO[]) {
+    let specIds = targetSpectra.map(spec => spec.id);
+    let compIds = components.map(comp => comp.id);
+    Repository.post(`${resource}/components`, {
+      specIds: specIds,
+      compIds: compIds
+    });
+  }
 }

@@ -75,15 +75,14 @@ export default class Home extends Vue {
           this.numRecentSpectra = this.spectra.length;
         }
       })
-      .catch(() => {
-      })
+      .catch(() => {})
       .then(() => {
         this.onLoading = false;
       });
   }
 
   openSpectrum(i: number) {
-    this.$store.commit('setTargetSpectrum', this.spectra[i]);
+    this.$store.commit("setTargetSpectrum", this.spectra[i]);
   }
 
   importSpectrumFromFile() {
@@ -95,22 +94,22 @@ export default class Home extends Vue {
       return;
     } else {
       // if select many, we only choose the first one
-       SpectrumDO.fromFile(selectedFilePaths[0])
-           .then(spec => {
-              SpectraRepository.addSpectrum(<SpectrumDO>spec)
-                .then(() => {
-                  // data should be posted before preprocess page created, since
-                  // this page need data to construct.
-                  this.$store.commit('setTargetSpectrum', spec);
-                  this.$router.push("/preprocess");
-                })
-                .catch(err => {
-                  console.log(err);
-                })
-           })
-           .catch((error: any) => {
-              console.log(error);
+      SpectrumDO.fromFile(selectedFilePaths[0])
+        .then(spec => {
+          SpectraRepository.addSpectrum(<SpectrumDO>spec)
+            .then(() => {
+              // data should be posted before preprocess page created, since
+              // this page need data to construct.
+              this.$store.commit("setTargetSpectrum", spec);
+              this.$router.push("/preprocess");
+            })
+            .catch(err => {
+              console.log(err);
             });
+        })
+        .catch((error: any) => {
+          console.log(error);
+        });
     }
   }
 }

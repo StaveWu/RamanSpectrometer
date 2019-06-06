@@ -129,7 +129,7 @@ import Vue from 'vue'
 import { Component, Watch } from 'vue-property-decorator'
 import SGFilter from '@/components/SGFilter.vue'
 import airPLS from '@/components/AIRPLS.vue';
-import RepositoryFactory from '../repositories/RepositoryFactory';
+import SettingsRepository from '../repositories/SettingsRepository';
 import { AxiosResponse, AxiosError } from 'axios';
 import { Pipeline } from '../utils';
 import { Algorithm,
@@ -141,8 +141,6 @@ import { Algorithm,
   SVD_MAD,
   MINMAX_SCALE,
   SCALE } from '../common/Algorithm';
-
-const SettingsRepository = RepositoryFactory.get('settings');
 
 @Component({
   components: {
