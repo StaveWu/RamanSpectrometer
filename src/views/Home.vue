@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-container>
-      <v-layout wrap>
+    <v-container fluid>
+      <v-layout row wrap>
         <v-flex xs12 pb-2>
           <h2>导入</h2>
         </v-flex>

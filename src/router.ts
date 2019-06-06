@@ -31,10 +31,5 @@ export default new Router({
       name: 'purelibrary',
       component: () => import('./views/Purelibrary.vue'),
     },
-    {
-      path: '/batchdetection',
-      name: 'batchdetection',
-      component: () => import('./views/BatchDetection.vue'),
-    },
   ],
 });

@@ -11,7 +11,7 @@
       <v-container>
         <v-layout text-xs-center wrap>
           <v-flex xs12>
-            <v-img :src="require('./assets/logo.svg')" class="my-1" contain height="50"></v-img>
+            <v-img :src="require('./assets/iceberg.png')" class="my-1" contain height="50"></v-img>
           </v-flex>
           <v-flex xs12>
             <h3>拉曼光谱识别</h3>
@@ -56,7 +56,6 @@ export default class MainApp extends Vue {
   items: Array<any> = [
     { title: "首页", icon: "home", to: "/" },
     { title: "识别", icon: "search", to: "/preprocess" },
-    { title: "批量识别", icon: "youtube_searched_for", to: "/batchdetection" },
     { title: "组分库", icon: "import_contacts", to: "/purelibrary" },
     { title: "设置", icon: "settings", to: "/settings" }
   ];
