@@ -152,9 +152,17 @@ export default class DetectSetting extends Vue {
     SpectraRepository.tagSpectrum(
       this.$store.state.targetSpectrum.id,
       new DetectResult(comp.id, fliped)
-    ).catch(err => {
-      console.log(err);
-    });
+    )
+      .then(() => {
+        console.log('tune model');
+        ComponentRepository.tuneModel(comp.id)
+          .catch(err => {
+            console.log(err);
+          })
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 }
 </script>
