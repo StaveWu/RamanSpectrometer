@@ -6,7 +6,7 @@
 import Vue from 'vue';
 import * as Highcharts from 'highcharts';
 import { Component, Prop, Watch } from "vue-property-decorator";
-import {Series} from '@/utils'
+import {SpectrumDO} from '@/models'
 
 @Component
 export default class Spectrum extends Vue {
@@ -16,9 +16,9 @@ export default class Spectrum extends Vue {
   title!: string;
 
   @Prop({
-    default: () => new Array<Series>()
+    default: () => new Array<SpectrumDO>()
   })
-  datas!: Array<Series>;
+  datas!: Array<SpectrumDO>;
 
   chart?: Highcharts.Chart;
   container: string;
@@ -35,7 +35,7 @@ export default class Spectrum extends Vue {
     this.reloadTitle();
   }
 
-  @Watch('datas')
+  @Watch('datas', {deep: true})
   updateDatas() {
     this.reloadDatas();
   }
@@ -75,7 +75,7 @@ export default class Spectrum extends Vue {
     // 猜测与series的大小被重新分配有关，内部定义series有一定的开销
     let diff = this.chart.series.length - this.datas.length;
     if (diff > 0) {
-      for (let i = this.chart.series.length; i > diff; i--) {
+      for (let i = this.chart.series.length; i > this.datas.length; i--) {
         this.chart.series[i-1].remove(true);
       }
     } else if (diff < 0) {
@@ -85,8 +85,10 @@ export default class Spectrum extends Vue {
     }
     // update
     for (let i = 0; i < this.datas.length; i++) {
-      this.chart.series[i].name = this.datas[i].name;
-      this.chart.series[i].setData(this.datas[i].data);
+      this.chart.series[i].update(<Highcharts.SeriesLineOptions>{
+        name: this.datas[i].name,
+        data: this.datas[i].data
+      });
     }
   }
 

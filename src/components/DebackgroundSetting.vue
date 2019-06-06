@@ -5,64 +5,57 @@
         <v-combobox v-model="selected" :items="items" chips label="请选择基线校正算法"></v-combobox>
       </v-flex>
 
-      <v-flex pb-2 xs12 v-if="isAIRPLS()">
-        <h3>参数设置</h3>
-      </v-flex>
-      
       <v-flex text-xs-left md12 xs12 sm12 lg12>
-        <v-card>
-          <air-pls v-if="isAIRPLS()"></air-pls>
-        </v-card>
+        <air-pls v-if="isAIRPLS()" v-model="params"></air-pls>
       </v-flex>
 
-      <v-flex xs12 md12 lg12 text-xs-right pt-3>
+      <v-flex text-xs-right pt-3>
         <v-btn color="primary" @click="debackground()">应用</v-btn>
         <v-btn color="primary" @click="confirm()">确定</v-btn>
-        <v-btn flat>撤销</v-btn>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component';
-import airPLS from '@/components/AIRPLS.vue'
-import Axios, { AxiosResponse } from 'axios'
-
-
-enum DebackgroundAlogrithm {
-  AIRPLS = 'airPLS',
-  POLYFIT = '多项式拟合'
-}
+import Vue from "vue";
+import Component from "vue-class-component";
+import airPLS from "@/components/AIRPLS.vue";
+import { AxiosResponse, AxiosError } from "axios";
+import { Algorithm, AIRPLS } from "../common/Algorithm";
+import DebackgroundRepository from "../repositories/DebackgroundRepository";
+import { SpectrumDO } from "@/models";
 
 @Component({
   components: {
-    'air-pls': airPLS
+    "air-pls": airPLS
   }
 })
 export default class DebackgroundSetting extends Vue {
-  selected: DebackgroundAlogrithm = DebackgroundAlogrithm.AIRPLS;
-  items: Array<DebackgroundAlogrithm> = [
-    DebackgroundAlogrithm.AIRPLS,
-    DebackgroundAlogrithm.POLYFIT
-  ];
-  
-  isAIRPLS(): boolean {
-    return this.selected === DebackgroundAlogrithm.AIRPLS;
+  selected: Algorithm = AIRPLS;
+  items: Array<Algorithm> = [AIRPLS];
+  params: any = { lambda: 1e4 };
+
+  isAIRPLS() {
+    return this.selected === AIRPLS;
   }
-  debackground(): void {
-    Axios.get('http://127.0.0.1:5000/api/v1/spectras/1/debackgrounds/airpls?lambda=50')
-      .then((response: AxiosResponse) => {
-        this.$root.$emit('preprocessReceived', response.data.name, response.data.data);
+
+  debackground() {
+    DebackgroundRepository.get(
+      this.selected.value,
+      this.$store.state.targetSpectrum,
+      this.params
+    )
+      .then((spec: SpectrumDO) => {
+        this.$store.commit("setCandidateSpectrum", spec);
       })
-      .catch((error: any) => {
+      .catch((error: AxiosError) => {
         console.log(error);
       });
   }
 
   confirm() {
-    this.$root.$emit('preprocessConfirmed');
+    this.$store.commit("candidateToTarget");
   }
 }
 </script>

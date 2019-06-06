@@ -3,14 +3,14 @@
     <v-dialog v-model="dialog" max-width="500px">
       <v-card>
         <v-card-title>
-          <h1>{{ formTitle }}</h1>
+          <h1>{{ dialogTitle }}</h1>
         </v-card-title>
 
         <v-card-text>
           <v-container grid-list-md>
             <v-layout wrap>
               <v-flex xs12 sm6 md4>
-                <v-text-field v-model="editedItem.componentName" label="组分名"></v-text-field>
+                <v-text-field v-model="editedItem.name" label="组分名"></v-text-field>
               </v-flex>
               <v-flex xs12 sm6 md4>
                 <v-text-field v-model="editedItem.formula" label="化学式"></v-text-field>
@@ -23,7 +23,7 @@
               <v-flex>
                 <v-card flat>
                   <v-responsive :aspect-ratio="16/9">
-                    <spectrum :datas="[editedItem.series]"></spectrum>
+                    <spectrum :datas="editedItem.ownedSpectra"></spectrum>
                   </v-responsive>
                 </v-card>
               </v-flex>
@@ -42,7 +42,12 @@
     <v-container>
       <v-layout align-center wrap>
         <v-flex grow>
-          <v-text-field placeholder="Search..." clearable prepend-inner-icon="search"></v-text-field>
+          <v-text-field
+            placeholder="Search..."
+            clearable
+            prepend-inner-icon="search"
+            v-model="search"
+          ></v-text-field>
         </v-flex>
 
         <v-flex shrink pl-3>
@@ -51,11 +56,16 @@
 
         <v-flex xs12 pt-3>
           <v-card>
-            <v-data-table :headers="headers" :items="components" expand="expand" item-key="id">
+            <v-data-table
+              :headers="headers"
+              :items="components"
+              :search="search"
+              expand="expand"
+              item-key="name"
+            >
               <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
-                  <td>{{ props.item.id }}</td>
-                  <td class="text-xs-right">{{ props.item.componentName }}</td>
+                  <td>{{ props.item.name }}</td>
                   <td class="text-xs-right">{{ props.item.formula }}</td>
                   <td class="text-xs-right">
                     <span v-if="props.item.state === 'offline'" class="offline">离线</span>
@@ -63,26 +73,16 @@
                     <span v-if="props.item.state === 'busy'" class="busy">忙碌</span>
                   </td>
                   <td class="justify-center layout px-0">
-                    <v-icon
-                      small
-                      class="mr-2"
-                      @click="editItem(props.item)"
-                    >
-                      edit
-                    </v-icon>
-                    <v-icon
-                      small
-                      @click="deleteItem(props.item)"
-                    >
-                      delete
-                    </v-icon>
+                    <v-icon class="mr-2" @click="createModel(props.item)">update</v-icon>
+                    <v-icon class="mr-2" @click="editItem(props.item)">edit</v-icon>
+                    <v-icon @click="deleteItem(props.item)">delete</v-icon>
                   </td>
                 </tr>
               </template>
               <template slot="expand" slot-scope="props">
                 <v-card flat>
                   <v-responsive :aspect-ratio="16/9">
-                    <spectrum :datas="[props.item.series]"></spectrum>
+                    <spectrum :datas="props.item.ownedSpectra"></spectrum>
                   </v-responsive>
                 </v-card>
               </template>
@@ -91,25 +91,18 @@
         </v-flex>
       </v-layout>
     </v-container>
-    
   </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component';
-import Spectrum from '@/components/Spectrum.vue';
-import {remote} from 'electron';
-import fs from 'fs';
-import {Series} from '@/utils';
-
-interface RowViewObject { // 定义行对象
-  id: number;
-  componentName: string;
-  formula: string;
-  state: string;
-  series: Series;
-}
+import Vue from "vue";
+import Component from "vue-class-component";
+import Spectrum from "@/components/Spectrum.vue";
+import { remote } from "electron";
+import fs from "fs";
+import { ComponentDO, SpectrumDO, ModelDTO } from "@/models";
+import ComponentRepository from "../repositories/ComponentRepository";
+import { AxiosResponse, AxiosError } from "axios";
 
 @Component({
   components: {
@@ -119,102 +112,167 @@ interface RowViewObject { // 定义行对象
 export default class PureLibrary extends Vue {
   dialog: boolean = false;
   editedIndex: number = -1;
-  editedItem: RowViewObject = {id: -1, componentName: '', formula: '', state: 'offline', series: {name: '', data: []}};
-  defaultItem: RowViewObject = {id: -1, componentName: '', formula: '', state: 'offline', series: {name: '', data: []}};
+  editedItem: ComponentDO = new ComponentDO("", [], "", 'offline');
+  defaultItem: ComponentDO = new ComponentDO("", [], "", 'offline');
 
   expand: boolean = false;
   headers: Array<any> = [
-    {text: 'id', value: 'id'},
-    {text: '组分名', value: 'componentName'},
-    {text: '化学式', value: 'formula'},
-    {text: '模型状态', value: 'state'},
-    {text: '操作', value: 'actions', sortable: false}
+    { text: "组分名", value: "name" },
+    { text: "化学式", value: "formula" },
+    { text: "模型状态", value: "state" },
+    { text: "操作", value: "actions", sortable: false }
   ];
-  components: Array<RowViewObject> = [
-    {id: 1, componentName: '乙醇', formula: 'C2H5OH', state: 'online', series: {name: '', data: [1, 2, 3, 2]}},
-    {id: 2, componentName: 'DMSO', formula: '(CH3)2SO', state: 'busy', series: {name: '', data: [2, 22, 4, 7]}},
-    {id: 3, componentName: 'DMF', formula: 'C3H7NO', state: 'online', series: {name: '', data: [2, 22, 4, 7]}},
-    {id: 4, componentName: '二甲醚', formula: 'C2H6O', state: 'online', series: {name: '', data: [2, 22, 4, 7]}},
-    {id: 5, componentName: '四氯化碳', formula: 'CCl4', state: 'offline', series: {name: '', data: [2, 22, 4, 7]}},
-    {id: 6, componentName: '乙酸', formula: 'CH3COOH', state: 'offline', series: {name: '', data: [2, 22, 4, 7]}},
-  ]
+  components: Array<ComponentDO> = [];
+
+  search: string = "";
+  timer?: any;
+
+  constructor() {
+    super();
+    ComponentRepository.loadComponents()
+      .then((comps: Array<ComponentDO>) => {
+        comps.forEach(comp => this.components.push(comp));
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
+      });
+  }
+
+  mounted() {
+    this.timer = window.setInterval(() => {
+      ComponentRepository.getModels()
+        .then(resp => {
+          let modeldtos: Array<ModelDTO> = [];
+          resp.data.models.forEach((model: any) => {
+            modeldtos.push(ModelDTO.fromJson(model));
+          });
+          this.components.forEach(comp => {
+            let finded = modeldtos.find(modeldto => modeldto.id === comp.id);
+            if (finded) {
+              comp.state = finded.state;
+            }
+          })
+        })
+    }, 5000);
+  }
+
+  beforeDestroy() {
+    if (this.timer) {
+      window.clearInterval(this.timer);
+    }
+  }
 
   newItem() {
     this.editItem(this.defaultItem);
   }
 
-  editItem(item: RowViewObject) {
+  editItem(item: ComponentDO) {
     this.editedIndex = this.components.indexOf(item);
-    this.editedItem = Object.assign({}, item);
+    this.editedItem = item.clone();
     this.dialog = true;
   }
 
-  deleteItem(item: RowViewObject) {
+  deleteItem(item: ComponentDO) {
     const index = this.components.indexOf(item);
-    confirm('确定要删除该组分吗?') && this.components.splice(index, 1);
+    if (confirm("确定要删除该组分吗?")) {
+      if (item.id === undefined) {
+        return;
+      }
+      ComponentRepository.removeComponent(item.id)
+        .then(() => {
+          this.components.splice(index, 1);
+        })
+        .catch((error: AxiosError) => {
+          console.log(error);
+        });
+    }
   }
 
-  get formTitle() {
-    return this.editedIndex == -1 ? '新建组分' : '编辑组分';
+  createModel(item: ComponentDO) {
+    if (item.state === 'busy') {
+      Vue.prototype.logging.info('模型正忙，请等待当前任务结束后再试');
+      return;
+    }
+    if (!item.id) {
+      Vue.prototype.logging.error('异常错误！当前组分没有分配id');
+      return;
+    }
+    ComponentRepository.createModel(item.id)
+      .then(() => {
+        Vue.prototype.logging.info('正在生成模型...');
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  get dialogTitle() {
+    return this.editedIndex == -1 ? "新建组分" : "编辑组分";
   }
 
   close() {
     this.dialog = false;
     setTimeout(() => {
-      this.editedItem = Object.assign({}, this.defaultItem);
+      this.editedItem = this.defaultItem.clone();
       this.editedIndex = -1;
-    }, 300)
+    }, 300);
   }
 
   save() {
-    if (this.editedIndex > -1) { // 更新组分
-      Object.assign(this.components[this.editedIndex], this.editedItem);
-    } else { // 新建组分
-      this.editedItem.id = this.getMaxIndex() + 1;
-      this.components.push(this.editedItem);
+    if (this.editedIndex > -1) {
+      // 更新组分
+      ComponentRepository.updateComponent(this.editedItem)
+        .then((response: AxiosResponse) => {
+          this.$set(
+            this.components,
+            this.editedIndex,
+            this.editedItem.clone()
+          );
+        })
+        .catch((error: any) => {
+          console.log(error);
+        });
+    } else {
+      // 新建组分
+      ComponentRepository.addComponent(this.editedItem)
+        .then((comp) => {
+          this.components.push(this.editedItem);
+        })
+        .catch((error: any) => {
+          console.log(error);
+        });
     }
     this.close();
   }
 
   importSpectraFromFile() {
-    const selectedFilePaths = remote.dialog.showOpenDialog({properties: ['openFile']});
+    const selectedFilePaths = remote.dialog.showOpenDialog({
+      properties: ["openFile"]
+    });
     if (selectedFilePaths === undefined) {
       return;
     } else {
-      fs.readFile(selectedFilePaths[0], (err, data) => {
-        if (err) {
-          return console.error(err);
-        } else {
-          let arr = new Array<number>();
-          data.toString().trim().split('\n').map(line => arr.push(parseFloat(line.split('\t')[1])));
-          this.editedItem.series = {name: '', data: arr};
-        }
-      })
+      SpectrumDO.fromFile(selectedFilePaths[0])
+        .then(spec => {
+          this.editedItem.ownedSpectra.push(<SpectrumDO>spec);
+        })
+        .catch(err =>{
+          console.log(err);
+        })
     }
   }
-
-  private getMaxIndex(): number {
-    let max = 0;
-    for (const ele of this.components) {
-      if (max < ele.id) {
-        max = ele.id;
-      }
-    }
-    return max;
-  }
-
 }
 </script>
 
 <style>
 .offline {
-  color: #F44336;
+  color: #f44336;
 }
 .online {
-  color: #4CAF50;
+  color: #4caf50;
 }
 .busy {
-  color: #FF9800;
+  color: #ff9800;
 }
 </style>
 

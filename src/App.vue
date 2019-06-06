@@ -1,15 +1,17 @@
 <template>
   <v-app class="global" :dark="dark">
-    <v-navigation-drawer clipped app width="170" :class="{'grey': !dark, 'lighten-3': !dark}" permanent floating>
+    <v-navigation-drawer
+      clipped
+      app
+      width="170"
+      :class="{'grey': !dark, 'lighten-3': !dark}"
+      permanent
+      floating
+    >
       <v-container>
         <v-layout text-xs-center wrap>
           <v-flex xs12>
-            <v-img
-              :src="require('./assets/logo.svg')"
-              class="my-1"
-              contain
-              height="50"
-            ></v-img>
+            <v-img :src="require('./assets/logo.svg')" class="my-1" contain height="50"></v-img>
           </v-flex>
           <v-flex xs12>
             <h3>拉曼光谱识别</h3>
@@ -18,11 +20,7 @@
       </v-container>
 
       <v-list dense>
-        <v-list-tile
-          v-for="item in items"
-          :key="item.title"
-          :to="item.to"
-        >
+        <v-list-tile v-for="item in items" :key="item.title" :to="item.to">
           <v-list-tile-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-tile-action>
@@ -35,42 +33,65 @@
     </v-navigation-drawer>
 
     <v-content>
-        <router-view></router-view>
+      <v-alert :value="showable" type="warning">{{ message }}</v-alert>
+      <router-view></router-view>
+      <log ref="logging"></log>
     </v-content>
-
   </v-app>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import { Component } from 'vue-property-decorator'
+import Vue from "vue";
+import { Component } from "vue-property-decorator";
+import repository from "@/repositories/Repository";
+import { AxiosError } from "axios";
+import Log from '@/components/Log.vue'
 
-@Component
+@Component({
+  components: {
+    Log
+  }
+})
 export default class MainApp extends Vue {
-  dark: boolean;
   items: Array<any> = [
-    {title: '首页', icon: 'home', to: '/'},
-    {title: '识别', icon: 'search', to: '/preprocess'},
-    {title: '批量识别', icon: 'youtube_searched_for', to: '/batchdetection'},
-    {title: '组分库', icon: 'import_contacts', to: '/purelibrary'},
-    {title: '设置', icon: 'settings', to: '/settings'},
-  ]
+    { title: "首页", icon: "home", to: "/" },
+    { title: "识别", icon: "search", to: "/preprocess" },
+    { title: "批量识别", icon: "youtube_searched_for", to: "/batchdetection" },
+    { title: "组分库", icon: "import_contacts", to: "/purelibrary" },
+    { title: "设置", icon: "settings", to: "/settings" }
+  ];
+
+  showable = false;
+  message: string = "";
 
   constructor() {
     super();
-    this.dark = this.getDark();
+    repository.interceptors.response.use(
+      (response: any) => {
+        this.alert(false);
+        return response;
+      },
+      (err: AxiosError) => {
+        // Don't know why but update prop here is invalid for DOM,
+        // so use alert method instead.
+        this.alert(true, err.message);
+        return Promise.reject(err);
+      }
+    );
   }
 
-  beforeUpdate() {
-    this.dark = this.getDark();
+  alert(showable: boolean, message: string = "") {
+    this.showable = showable;
+    this.message = message;
   }
 
-  private getDark() {
-    let res = Vue.prototype.dark;
-    if (res === undefined) {
-      res = false;
-    }
-    return res;
+  get dark() {
+    return this.$store.state.dark;
+  }
+
+  mounted() {
+    // register as a global component
+    Vue.prototype.logging = this.$refs.logging;
   }
 }
 </script>
@@ -80,7 +101,7 @@ html {
   overflow-y: auto;
 }
 .global {
-  font-family: '微软雅黑';
+  font-family: "微软雅黑";
 }
 </style>
 

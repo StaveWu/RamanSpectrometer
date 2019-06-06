@@ -1,12 +1,25 @@
 <template>
   <div>
-    <v-tabs centered>
-      <v-tab :key="1">常规</v-tab>
-      <v-tab :key="2">光谱去噪</v-tab>
-      <v-tab :key="3">基线校正</v-tab>
-      <v-tab :key="4">组分识别</v-tab>
+    <v-toolbar :class="{'white': !dark, 'grey': dark, 'darken-3': dark}" tabs flat>
+      <v-btn icon @click="undo()">
+        <v-icon>undo</v-icon>
+      </v-btn>
+
+      <template v-slot:extension>
+        <v-tabs
+          centered
+          v-model="active"
+        >
+          <v-tab v-for="i in tabNames.length" :key="i-1">
+            {{ tabNames[i - 1] }}
+          </v-tab>
+        </v-tabs>
+      </template>
+    </v-toolbar>
+
+    <v-tabs-items v-model="active">
       <v-tab-item :key="1">
-        <conventional-setting></conventional-setting>
+        <conventional-setting/>
       </v-tab-item>
       <v-tab-item :key="2">
         <denoise-setting/>
@@ -15,9 +28,9 @@
         <debackground-setting></debackground-setting>
       </v-tab-item>
       <v-tab-item :key="4">
-        <detect-setting :targetSpectra="datas[datas.length - 1]"></detect-setting>
+        <detect-setting></detect-setting>
       </v-tab-item>
-    </v-tabs>
+    </v-tabs-items>
 
     <v-container fluid>
       <v-layout wrap>
@@ -28,7 +41,7 @@
         <v-flex xs12>
           <v-card>
             <v-responsive :aspect-ratio="16/9">
-              <spectrum :datas="datas"></spectrum>
+              <spectrum :datas="spectraDeque"></spectrum>
             </v-responsive>
           </v-card>
         </v-flex>
@@ -39,16 +52,14 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import Vue from 'vue';
 import DenoiseSetting from '@/components/DenoiseSetting.vue';
 import DebackgroundSetting from '@/components/DebackgroundSetting.vue';
 import DetectSetting from '@/components/DetectSetting.vue';
 import ConventionalSetting from '@/components/ConventionalSetting.vue';
 import Spectrum from '@/components/Spectrum.vue';
 
-import Component from 'vue-class-component';
-import {Series} from '@/utils'
-import store from '../store'
+import { Component, Prop, Watch } from "vue-property-decorator";
 
 @Component({
   components: {
@@ -60,33 +71,19 @@ import store from '../store'
   }
 })
 export default class PreprocessView extends Vue {
-  datas: Array<Series> = [];
+  active: number = 0;
+  readonly tabNames: Array<string> = ['常规处理', '光谱去噪', '基线校正', '组分识别'];
 
-  constructor() {
-    super();
-
-    this.datas.push(this.getSpectraData());
+  get dark() {
+    return this.$store.state.dark;
   }
 
-  created() {
-    this.$root.$on('preprocessReceived', (name: string, data: Array<any>) => {
-      this.datas.push({name: name, data: data});
-    });
-    this.$root.$on('preprocessConfirmed', () => {
-      if (this.datas.length == 0) {
-        return;
-      }
-      this.datas.splice(0, 1);
-    });
+  get spectraDeque() {
+    return this.$store.getters.spectra;
   }
 
-  beforeDestroy() {
-    this.$root.$off('preprocessReceived');
-    this.$root.$off('preprocessConfirmed');
-  }
-
-  private getSpectraData(): Series {
-    return store.state.spectra;
+  undo() {
+    this.$store.commit('undo');
   }
 }
 </script>

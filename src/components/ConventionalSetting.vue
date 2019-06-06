@@ -8,43 +8,40 @@
       <v-flex text-xs-right pt-3>
         <v-btn color="primary" @click="preprocess()">应用</v-btn>
         <v-btn color="primary" @click="confirm()">确定</v-btn>
-        <v-btn flat>撤销</v-btn>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import Component from 'vue-class-component';
-import Axios, { AxiosResponse, AxiosRequestConfig } from 'axios'
-
-
-enum ConventionalActions {
-  MINMAX_SCALE = '归一化',
-  SCALE = '标准化'
-}
+import Vue from "vue";
+import Component from "vue-class-component";
+import { SpectrumDO } from "../models";
+import { Algorithm, MINMAX_SCALE, SCALE } from "../common/Algorithm";
+import ConventionalRepository from "@/repositories/ConventionalRepository";
 
 @Component
 export default class ConventionalSetting extends Vue {
-  selected: ConventionalActions = ConventionalActions.MINMAX_SCALE;
-  items: Array<ConventionalActions> = [
-    ConventionalActions.MINMAX_SCALE,
-    ConventionalActions.SCALE
-  ];
+  selected: Algorithm = MINMAX_SCALE;
+  items: Array<Algorithm> = [MINMAX_SCALE, SCALE];
+  parameters?: any;
 
   preprocess() {
-    Axios.post('http://127.0.0.1:5000/api/v1/conventionals/minmax-scale')
-    .then((response: AxiosResponse) => {
-      this.$root.$emit('preprocessReceived', response.data.name, response.data.data);
-    })
-    .catch((error: any) => {
-      console.log(error);
-    });
+    ConventionalRepository.get(
+      this.selected.value,
+      this.$store.state.targetSpectrum,
+      this.parameters
+    )
+      .then((spec: SpectrumDO) => {
+        this.$store.commit("setCandidateSpectrum", spec);
+      })
+      .catch((error: any) => {
+        console.log(error);
+      });
   }
 
   confirm() {
-    this.$root.$emit('preprocessConfirmed');
+    this.$store.commit("candidateToTarget");
   }
 }
 </script>
