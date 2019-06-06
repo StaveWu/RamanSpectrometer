@@ -24,7 +24,7 @@ import airPLS from "@/components/AIRPLS.vue";
 import { AxiosResponse, AxiosError } from "axios";
 import { Algorithm, AIRPLS } from "../common/Algorithm";
 import DebackgroundRepository from "../repositories/DebackgroundRepository";
-import { SpectrumDO } from "@/utils";
+import { SpectrumDO } from "@/models";
 
 @Component({
   components: {

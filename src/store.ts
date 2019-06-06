@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { SpectrumDO } from '@/utils'
+import { SpectrumDO } from '@/models'
 
 Vue.use(Vuex);
 

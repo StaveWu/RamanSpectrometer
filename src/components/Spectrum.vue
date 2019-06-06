@@ -6,7 +6,7 @@
 import Vue from 'vue';
 import * as Highcharts from 'highcharts';
 import { Component, Prop, Watch } from "vue-property-decorator";
-import {SpectrumDO} from '@/utils'
+import {SpectrumDO} from '@/models'
 
 @Component
 export default class Spectrum extends Vue {

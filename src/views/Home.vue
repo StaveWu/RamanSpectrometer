@@ -48,7 +48,7 @@ import Component from "vue-class-component";
 import Spectrum from "@/components/Spectrum.vue";
 import { remote } from "electron";
 import fs from "fs";
-import { SpectrumDO } from "@/utils";
+import { SpectrumDO } from "@/models";
 import { AxiosResponse } from "axios";
 import SpectraRepository from "../repositories/SpectraRepository";
 

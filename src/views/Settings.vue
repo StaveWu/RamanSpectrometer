@@ -131,7 +131,7 @@ import SGFilter from '@/components/SGFilter.vue'
 import airPLS from '@/components/AIRPLS.vue';
 import SettingsRepository from '../repositories/SettingsRepository';
 import { AxiosResponse, AxiosError } from 'axios';
-import { Pipeline } from '../utils';
+import { Pipeline } from '../models';
 import { Algorithm,
   SG,
   DAE,

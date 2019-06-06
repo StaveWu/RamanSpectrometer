@@ -1,5 +1,5 @@
 import Repository from '../repositories/Repository';
-import { SpectrumDO, DetectResult, ComponentDO } from '@/utils';
+import { SpectrumDO, DetectResult, ComponentDO } from '@/models';
 
 const resource = '/spectra';
 export default {

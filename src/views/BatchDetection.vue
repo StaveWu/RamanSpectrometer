@@ -111,7 +111,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { SpectrumDO, ComponentDO } from "@/utils";
+import { SpectrumDO, ComponentDO } from "@/models";
 import { AxiosResponse, AxiosError } from "axios";
 import Spectrum from "@/components/Spectrum.vue";
 import ComponentRepository from "../repositories/ComponentRepository";

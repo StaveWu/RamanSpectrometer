@@ -1,5 +1,5 @@
 import Repository from '../repositories/Repository';
-import {Pipeline} from '../utils'
+import {Pipeline} from '../models'
 
 const resource = '/settings';
 const set = (what: string, data: any) => {

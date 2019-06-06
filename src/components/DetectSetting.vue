@@ -55,7 +55,7 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import Spectrum from "@/components/Spectrum.vue";
-import { SpectrumDO, ComponentDO, DetectResult } from "@/utils";
+import { SpectrumDO, ComponentDO, DetectResult } from "@/models";
 import { AxiosResponse, AxiosError } from "axios";
 import { Prop } from "vue-property-decorator";
 import ComponentRepository from "../repositories/ComponentRepository";

@@ -16,7 +16,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
-import { SpectrumDO } from "../utils";
+import { SpectrumDO } from "../models";
 import { Algorithm, MINMAX_SCALE, SCALE } from "../common/Algorithm";
 import ConventionalRepository from "@/repositories/ConventionalRepository";
 

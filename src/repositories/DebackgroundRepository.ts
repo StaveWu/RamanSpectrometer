@@ -1,5 +1,5 @@
 import Repository from './Repository';
-import { SpectrumDO } from '@/utils';
+import { SpectrumDO } from '@/models';
 
 const resource = '/debackgrounds';
 export default {

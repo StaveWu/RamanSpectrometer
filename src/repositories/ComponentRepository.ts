@@ -1,5 +1,5 @@
 import Repository from '../repositories/Repository';
-import { ComponentDO, ComponentDTO, ModelDTO } from '@/utils';
+import { ComponentDO, ComponentDTO, ModelDTO } from '@/models';
 import axios from 'axios';
 
 const resource = '/components';

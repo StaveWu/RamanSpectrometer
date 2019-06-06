@@ -100,7 +100,7 @@ import Component from "vue-class-component";
 import Spectrum from "@/components/Spectrum.vue";
 import { remote } from "electron";
 import fs from "fs";
-import { ComponentDO, SpectrumDO, ModelDTO } from "@/utils";
+import { ComponentDO, SpectrumDO, ModelDTO } from "@/models";
 import ComponentRepository from "../repositories/ComponentRepository";
 import { AxiosResponse, AxiosError } from "axios";
 

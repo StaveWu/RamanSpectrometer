@@ -22,7 +22,7 @@ import Vue from "vue";
 import SGFilter from "@/components/SGFilter.vue";
 import Component from "vue-class-component";
 import { AxiosResponse, AxiosError } from "axios";
-import { SpectrumDO } from "@/utils";
+import { SpectrumDO } from "@/models";
 import DenoiseRepository from "@/repositories/DenoiseRepository";
 import { Algorithm, SG, DAE } from "../common/Algorithm";
 
