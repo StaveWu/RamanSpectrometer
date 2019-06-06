@@ -154,7 +154,7 @@ export default class DetectSetting extends Vue {
       new DetectResult(comp.id, fliped)
     )
       .then(() => {
-        console.log('tune model');
+        Vue.prototype.logging.info('正在调整模型...');
         ComponentRepository.tuneModel(comp.id)
           .catch(err => {
             console.log(err);

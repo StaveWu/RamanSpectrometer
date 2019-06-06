@@ -35,6 +35,7 @@
     <v-content>
       <v-alert :value="showable" type="warning">{{ message }}</v-alert>
       <router-view></router-view>
+      <log ref="logging"></log>
     </v-content>
   </v-app>
 </template>
@@ -44,8 +45,13 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import repository from "@/repositories/Repository";
 import { AxiosError } from "axios";
+import Log from '@/components/Log.vue'
 
-@Component
+@Component({
+  components: {
+    Log
+  }
+})
 export default class MainApp extends Vue {
   items: Array<any> = [
     { title: "首页", icon: "home", to: "/" },
@@ -81,6 +87,11 @@ export default class MainApp extends Vue {
 
   get dark() {
     return this.$store.state.dark;
+  }
+
+  mounted() {
+    // register as a global component
+    Vue.prototype.logging = this.$refs.logging;
   }
 }
 </script>

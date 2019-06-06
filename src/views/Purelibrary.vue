@@ -189,17 +189,17 @@ export default class PureLibrary extends Vue {
   }
 
   createModel(item: ComponentDO) {
-    if (item.state !== 'offline') {
-      console.log('item model is exist');
+    if (item.state === 'busy') {
+      Vue.prototype.logging.info('模型正忙，请等待当前任务结束后再试');
       return;
     }
     if (!item.id) {
-      console.log('runtime error: item.id is not init yet');
+      Vue.prototype.logging.error('异常错误！当前组分没有分配id');
       return;
     }
     ComponentRepository.createModel(item.id)
       .then(() => {
-        console.log('waiting for created');
+        Vue.prototype.logging.info('正在生成模型...');
       })
       .catch(err => {
         console.log(err);
