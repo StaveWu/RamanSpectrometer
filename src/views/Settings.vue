@@ -13,7 +13,7 @@
           <h3>关于拉曼光谱识别软件</h3>
         </v-flex>
         <v-flex xs12>
-          <v-subheader>当前版本：1.0.0</v-subheader>
+          <v-subheader>当前版本：{{ version }}</v-subheader>
         </v-flex>
       </v-layout>
     </v-container>
@@ -23,18 +23,16 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Component, Watch } from 'vue-property-decorator'
+import electron from 'electron'
 
 @Component
 export default class Settings extends Vue {
-  dark: boolean = false;
+  dark: boolean = this.$store.state.dark;
+  version: string = (electron.app || electron.remote.app).getVersion();
 
   @Watch('dark')
   switchTheme() {
     this.$store.commit('setDark', this.dark);
-  }
-
-  mounted() {
-    this.dark = this.$store.getters.dark;
   }
 }
 </script>
