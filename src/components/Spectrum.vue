@@ -67,7 +67,8 @@ export default class Spectrum extends Vue {
   }
 
   private reloadDatas() {
-    if (!this.checkChart()) {
+    if (!this.chart) {
+      alert('表格没有初始化！');
       return;
     }
 
@@ -93,18 +94,11 @@ export default class Spectrum extends Vue {
   }
 
   private reloadTitle() {
-    if (!this.checkChart()) {
+    if (!this.chart) {
+      alert('表格没有初始化！');
       return;
     }
     this.chart.title.update({text: this.title});
-  }
-
-  private checkChart(): boolean {
-    if (this.chart === undefined) {
-      alert('表格没有初始化！');
-      return false;
-    }
-    return true;
   }
 }
 </script>
