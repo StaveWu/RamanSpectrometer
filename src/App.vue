@@ -77,6 +77,7 @@ export default class MainApp extends Vue {
         return Promise.reject(err);
       }
     );
+    // load preference
   }
 
   alert(showable: boolean, message: string = "") {
