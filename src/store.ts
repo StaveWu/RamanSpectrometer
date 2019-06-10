@@ -50,7 +50,7 @@ export default new Vuex.Store({
     },
     setDark(state, enable: boolean) {
       state.dark = enable;
-      preference.set('dark', true);
+      preference.set('dark', enable);
     },
   },
   actions: {
