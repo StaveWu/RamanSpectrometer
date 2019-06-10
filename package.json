@@ -11,7 +11,8 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
     "test:e2e": "vue-cli-service test:e2e",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit",
+    "electron:generate-icons": "electron-icon-builder --input=./public/icon.png --output=dist_electron --flatten"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -39,6 +40,7 @@
     "@vue/test-utils": "^1.0.0-beta.20",
     "chai": "^4.1.2",
     "electron": "^4.0.0",
+    "electron-icon-builder": "^1.0.0",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.0.1",
     "stylus": "^0.54.5",
