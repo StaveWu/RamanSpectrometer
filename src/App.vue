@@ -11,7 +11,7 @@
       <v-container>
         <v-layout text-xs-center wrap>
           <v-flex xs12>
-            <v-img :src="require('./assets/iceberg.png')" class="my-1" contain height="50"></v-img>
+            <v-img :src="require('./assets/full-spectrum.png')" class="my-1" contain height="60"></v-img>
           </v-flex>
           <v-flex xs12>
             <h3>拉曼光谱识别</h3>
