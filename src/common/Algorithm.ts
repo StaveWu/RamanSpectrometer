@@ -11,6 +11,7 @@ const POLYFIT: Algorithm = {text: '多项式拟合', value: 'polyfit'};
 const SVD_MAD: Algorithm = {text: '奇异值分解-中位数绝对偏差', value: 'svd-mad'};
 const MINMAX_SCALE: Algorithm = {text: '归一化', value: 'minmax-scale'};
 const SCALE: Algorithm = {text: '标准化', value: 'scale'};
+const SLICE: Algorithm = {text: '切片', value: 'slice'};
 
 export {
   SG,
@@ -20,5 +21,6 @@ export {
   POLYFIT,
   SVD_MAD,
   MINMAX_SCALE,
-  SCALE
+  SCALE,
+  SLICE
 }
