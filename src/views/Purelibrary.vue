@@ -141,11 +141,7 @@ export default class PureLibrary extends Vue {
   mounted() {
     this.timer = window.setInterval(() => {
       ComponentRepository.getModels()
-        .then(resp => {
-          let modeldtos: Array<ModelDTO> = [];
-          resp.data.models.forEach((model: any) => {
-            modeldtos.push(ModelDTO.fromJson(model));
-          });
+        .then(modeldtos => {
           this.components.forEach(comp => {
             let finded = modeldtos.find(modeldto => modeldto.id === comp.id);
             if (finded) {

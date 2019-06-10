@@ -8,6 +8,10 @@ function loadModelDTOs() {
   return Repository.get('models');
 }
 
+function getModelDTO(id: number) {
+  return Repository.get(`models/${id}`);
+}
+
 function deleteModelDTOs(id: number) {
   return Repository.delete(`models/${id}`);
 }
@@ -76,6 +80,19 @@ export default {
     return Repository.put(`${resource}/${id}/model`);
   },
   getModels() {
-    return loadModelDTOs();
+    return loadModelDTOs()
+      .then(resp => {
+        let modeldtos: Array<ModelDTO> = [];
+        resp.data.models.forEach((model: any) => {
+          modeldtos.push(ModelDTO.fromJson(model));
+        });
+        return modeldtos;
+      });
+  },
+  getModel(id: number) {
+    return getModelDTO(id)
+      .then(resp => {
+        return ModelDTO.fromJson(resp.data);
+      });
   }
 }

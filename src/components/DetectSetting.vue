@@ -89,6 +89,8 @@ export default class DetectSetting extends Vue {
   ];
   results: Array<ComponentRowObject> = [];
 
+  timerMap: Map<number, any> = new Map();
+
   constructor() {
     super();
     ComponentRepository.loadComponents()
@@ -158,7 +160,17 @@ export default class DetectSetting extends Vue {
         ComponentRepository.tuneModel(comp.id)
           .catch(err => {
             console.log(err);
-          })
+          });
+        // start a timer to monitor state
+        this.timerMap.set(comp.id, window.setInterval(() => {
+          ComponentRepository.getModel(comp.id)
+            .then(modeldto => {
+              if (modeldto.state === 'online') {
+                Vue.prototype.logging.success('模型调整完毕');
+                window.clearInterval(this.timerMap.get(comp.id));
+              }
+            })
+        }, 5000));
       })
       .catch(err => {
         console.log(err);
