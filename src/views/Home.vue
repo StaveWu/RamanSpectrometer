@@ -87,7 +87,10 @@ export default class Home extends Vue {
 
   importSpectrumFromFile() {
     const selectedFilePaths = remote.dialog.showOpenDialog({
-      properties: ["openFile"]
+      properties: ["openFile"],
+      filters: [
+        {name: "File Type", extensions: ['txt', 'csv']}
+      ]
     });
     if (selectedFilePaths === undefined) {
       // skip if not select
@@ -108,7 +111,7 @@ export default class Home extends Vue {
             });
         })
         .catch((error: any) => {
-          console.log(error);
+          Vue.prototype.logging.error("读取错误，请检查文件中是否包含非法字符");
         });
     }
   }

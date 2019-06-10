@@ -21,14 +21,26 @@ export class SpectrumDO {
           reject(err);
         } else {
           let name = path.parse(pathname).name;
+          let ext = path.parse(pathname).ext;
+          let delimiter = '\t';
+          if (ext === 'txt') {
+            delimiter = '\t';
+          } else if (ext === 'csv') {
+            delimiter = ',';
+          }
           let points = new Array<Array<number>>();
           data
             .toString()
             .trim()
             .split("\n")
             .map((line: any) => {
-              let s = line.split("\t");
-              points.push([parseFloat(s[0]), parseFloat(s[1])]);
+              let s = line.split(delimiter);
+              let x = parseFloat(s[0]);
+              let y = parseFloat(s[1]);
+              if (isNaN(x) || isNaN(y)) {
+                reject("is not a number");
+              }
+              points.push([x, y]);
             });
           resolve(new SpectrumDO(name, points));
         }
