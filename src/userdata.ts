@@ -2,12 +2,12 @@ import electron from 'electron';
 import path from 'path';
 import fs from 'fs';
 
-export class Preference {
+export class UserData {
   path: string;
   data: any;
-  constructor(defaults: any) {
+  constructor(configName:string, defaults: any) {
     const useDataPath = (electron.app || electron.remote.app).getPath('userData');
-    this.path = path.join(useDataPath, 'user-preferences.json');
+    this.path = path.join(useDataPath, `${configName}.json`);
     this.data = parseDataFile(this.path, defaults);
   }
 

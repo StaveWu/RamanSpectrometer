@@ -1,21 +1,19 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { SpectrumDO } from '@/models';
-import { Preference } from '@/preference';
+import { UserData } from '@/userdata';
 
-const preference = new Preference({dark: false});
+const preference = new UserData('user-preferences', {dark: false});
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    undoDeque: new Array<SpectrumDO>(),
     dark: preference.get('dark'),
 
+    undoDeque: new Array<SpectrumDO>(),
     targetSpectrum: SpectrumDO.EMPTY,
     candidateSpectrum: SpectrumDO.EMPTY,
-
-    temp: SpectrumDO.EMPTY
   },
   mutations: {
     clear(state) {
