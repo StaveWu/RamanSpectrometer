@@ -1,6 +1,8 @@
 # RamanSpectrometer
 
-RamanSpectrometer是拉曼光谱识别软件的前端部分，主要负责界面显示和与后端（RamanSpectrometer-Flasky）的通信。
+RamanSpectrometer是拉曼光谱识别软件的前端部分，主要负责界面显示和与后端（RamanSpectrometer-Flasky）的通信。其界面如下所示：
+
+[RamanSpectrometer](https://raw.githubusercontent.com/StaveWu/images/master/RamanSpectrometer/mainpage.png)
 
 ## 安装
 > 本软件运行于`node.js v10.15.1`，在安装本软件前请确保当前系统已安装`node.js v10.15.1`
