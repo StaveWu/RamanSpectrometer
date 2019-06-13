@@ -1,39 +1,23 @@
-# raman-spectrometer
+# RamanSpectrometer
 
-## Project setup
+RamanSpectrometer是拉曼光谱识别软件的前端部分，主要负责界面显示和与后端（RamanSpectrometer-Flasky）的通信。
+
+## 安装
+> 本软件运行于`node.js v10.15.1`，在安装本软件前请确保当前系统已安装`node.js v10.15.1`
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+## 运行
+执行以下命令编译和热加载程序：
 ```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
+npm run electron:serve
 ```
 
-### Run your tests
+## 打包
+执行以下命令打包程序：
 ```
-npm run test
+npm run electron:build
 ```
+打包成功后在`dist_electron`文件夹中寻找打包好的exe。
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Run your end-to-end tests
-```
-npm run test:e2e
-```
-
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
