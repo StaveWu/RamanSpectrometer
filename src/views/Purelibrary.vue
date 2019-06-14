@@ -10,7 +10,7 @@
           <v-container grid-list-md>
             <v-layout wrap>
               <v-flex xs12 sm6 md4>
-                <v-text-field v-model="editedItem.name" label="组分名"></v-text-field>
+                <v-text-field v-model="editedItem.name" label="组分名" :rules="[rules.required]"></v-text-field>
               </v-flex>
               <v-flex xs12 sm6 md4>
                 <v-text-field v-model="editedItem.formula" label="化学式"></v-text-field>
@@ -62,6 +62,8 @@
               :search="search"
               expand="expand"
               item-key="name"
+              disable-initial-sort
+              :pagination.sync="pagination"
             >
               <template slot="items" slot-scope="props">
                 <tr @click="props.expanded = !props.expanded">
@@ -123,6 +125,9 @@ export default class PureLibrary extends Vue {
     { text: "操作", value: "actions", sortable: false }
   ];
   components: Array<ComponentDO> = [];
+
+  rules: any = {required: (value: string) => !!value || 'Required.'}
+  pagination: any = {rowsPerPage: 10};
 
   search: string = "";
   timer?: any;
@@ -232,7 +237,7 @@ export default class PureLibrary extends Vue {
       // 新建组分
       ComponentRepository.addComponent(this.editedItem)
         .then((comp) => {
-          this.components.push(this.editedItem);
+          this.components.push(comp);
         })
         .catch((error: any) => {
           console.log(error);

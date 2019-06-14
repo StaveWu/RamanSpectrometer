@@ -65,6 +65,7 @@ export default {
       .then(resp => {
         // access id
         comp.id = resp.data.id;
+        return comp;
       });
   },
   removeComponent(id: number) {
