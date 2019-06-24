@@ -23,9 +23,9 @@ export class SpectrumDO {
           let name = path.parse(pathname).name;
           let ext = path.parse(pathname).ext;
           let delimiter = '\t';
-          if (ext === 'txt') {
+          if (ext === '.txt') {
             delimiter = '\t';
-          } else if (ext === 'csv') {
+          } else if (ext === '.csv') {
             delimiter = ',';
           }
           let points = new Array<Array<number>>();
