@@ -19,7 +19,7 @@
     "electron:generate-icons": "electron-icon-builder --input=./public/icon.png --output=dist_electron --flatten"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "chart.js": "^2.7.3",
     "highcharts": "^7.0.3",
     "highcharts-vue": "^1.2.0",
