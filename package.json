@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "chart.js": "^2.7.3",
+    "chart.js": "^2.9.4",
     "highcharts": "^7.0.3",
     "highcharts-vue": "^1.2.0",
     "register-service-worker": "^1.5.2",
